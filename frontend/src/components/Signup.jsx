@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
-import { UserIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { UserIcon, EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
-const Login = () => {
-  const [form, setForm] = useState({ identifier: "", password: "" });
+const Signup = () => {
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [message, setMessage] = useState("");
 
   const handleChange = (e) =>
@@ -13,11 +13,10 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", form);
+      const res = await api.post("/auth/register", form);
       setMessage(res.data.message);
-      // Handle successful login (e.g. redirect or save token) here if desired
     } catch (error) {
-      setMessage(error.response?.data?.message || "Login failed");
+      setMessage(error.response?.data?.message || "Signup failed");
     }
   };
 
@@ -25,10 +24,10 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-[#1E2331]">
       <div className="bg-[#151824] p-10 rounded-2xl shadow-2xl w-full max-w-md">
         <h2 className="text-3xl font-bold text-center text-white mb-2">
-          Sign In
+          Sign Up
         </h2>
         <p className="text-center text-gray-400 mb-8">
-          Log in to your account to continue.
+          Create a new account to get started.
         </p>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="relative">
@@ -36,10 +35,24 @@ const Login = () => {
               <UserIcon className="h-5 w-5" />
             </span>
             <input
-              name="identifier"
+              name="username"
               type="text"
-              placeholder="Username or Email"
-              value={form.identifier}
+              placeholder="Username"
+              value={form.username}
+              onChange={handleChange}
+              required
+              className="w-full py-2 pl-10 pr-3 rounded bg-[#232941] text-green-300 border border-[#2c3250] focus:outline-none focus:ring-2 focus:ring-blue-900 font-mono"
+            />
+          </div>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+              <EnvelopeIcon className="h-5 w-5" />
+            </span>
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={form.email}
               onChange={handleChange}
               required
               className="w-full py-2 pl-10 pr-3 rounded bg-[#232941] text-green-300 border border-[#2c3250] focus:outline-none focus:ring-2 focus:ring-blue-900 font-mono"
@@ -63,23 +76,25 @@ const Login = () => {
             type="submit"
             className="w-full py-2 mt-2 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold tracking-wide shadow transition"
           >
-            Login
+            Sign Up
           </button>
           <div
             className={`text-center min-h-5 font-medium ${
-              message === "Login successful" ? "text-green-500" : "text-red-400"
+              message === "User registered successfully"
+                ? "text-green-500"
+                : "text-red-400"
             }`}
           >
             {message}
           </div>
         </form>
         <p className="text-center text-gray-400 mt-6">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            to="/signup"
+            to="/login"
             className="text-blue-500 hover:text-blue-400 hover:underline transition"
           >
-            Sign Up
+            Log In
           </Link>
         </p>
       </div>
@@ -87,4 +102,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

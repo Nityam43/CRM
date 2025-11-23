@@ -1,10 +1,9 @@
-import Login from "./components/login";
+import Mainroutes from "./routes/Mainroutes";
 
 const App = () => {
   return (
     <div>
-      <h1>Hello to the app component.</h1>
-      <Login />
+      <Mainroutes />
     </div>
   );
 };
