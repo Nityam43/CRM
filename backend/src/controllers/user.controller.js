@@ -20,6 +20,21 @@ async function getUserController(req, res) {
   }
 }
 
+async function logoutController(req, res) {
+  try {
+    res.clearCookie("token");
+    res.status(200).json({
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error logging out",
+      error: error.message,
+    });
+  }
+}
+
 module.exports = {
   getUserController,
+  logoutController,
 };

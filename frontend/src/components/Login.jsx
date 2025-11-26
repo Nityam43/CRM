@@ -19,11 +19,6 @@ const Login = () => {
       });
       setMessage(res.data.message);
 
-      // Store token in localStorage
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      }
-
       // Redirect to dashboard on successful login
       if (
         res.status === 200 &&

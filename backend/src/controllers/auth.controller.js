@@ -33,12 +33,17 @@ async function registerController(req, res) {
     process.env.JWT_SECRET
   );
 
-  res.cookie("token", token);
+  // Set httpOnly cookie (secure and cannot be accessed by JavaScript)
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
   res.status(201).json({
     message: "User registered successfully",
     user,
-    token,
   });
 }
 
@@ -67,13 +72,17 @@ async function loginController(req, res) {
   // Generate JWT token
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-  // Set token to cookie
-  res.cookie("token", token);
+  // Set httpOnly cookie (secure and cannot be accessed by JavaScript)
+  res.cookie("token", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
   res.status(200).json({
     message: "Login Successful",
     user,
-    token,
   });
 }
 

@@ -5,13 +5,20 @@ import {
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await api.post("/user/logout");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Still redirect even if logout API fails
+      navigate("/login");
+    }
   };
 
   return (

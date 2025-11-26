@@ -20,11 +20,6 @@ const Signup = () => {
       const res = await api.post("/auth/register", form);
       setMessage(res.data.message);
 
-      // Store token in localStorage if provided
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-      }
-
       // Clear form after successful signup
       setForm({ username: "", email: "", password: "" });
     } catch (error) {
