@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
-import { UserIcon, EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/outline";
 
 const Signup = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -15,6 +19,14 @@ const Signup = () => {
     try {
       const res = await api.post("/auth/register", form);
       setMessage(res.data.message);
+
+      // Store token in localStorage if provided
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
+      // Clear form after successful signup
+      setForm({ username: "", email: "", password: "" });
     } catch (error) {
       setMessage(error.response?.data?.message || "Signup failed");
     }
