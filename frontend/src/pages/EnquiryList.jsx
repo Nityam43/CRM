@@ -1,6 +1,9 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 
 const EnquiryList = () => {
   const navigate = useNavigate();
@@ -197,10 +200,25 @@ const EnquiryList = () => {
 
                   {/* Symbols add karvana chhe */}
                   <td className="px-4 py-3 text-center">
-                    <div className="flex justify-center gap-3 text-gray-300">
-                      <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
-                      <span className="w-2 h-2 rounded-full bg-sky-400 inline-block" />
-                      <span className="w-2 h-2 rounded-full bg-blue-400 inline-block" />
+                    <div className="flex justify-center gap-3 text-gray-300 text-lg">
+                      <button
+                        className="hover:text-green-400 transition"
+                        title="WhatsApp"
+                      >
+                        <FontAwesomeIcon icon={faWhatsapp} />
+                      </button>
+                      <button
+                        className="hover:text-sky-400 transition"
+                        title="Message"
+                      >
+                        <FontAwesomeIcon icon={faCommentDots} />
+                      </button>
+                      <button
+                        className="hover:text-blue-400 transition"
+                        title="Call"
+                      >
+                        <FontAwesomeIcon icon={faPhone} />
+                      </button>
                     </div>
                   </td>
 
