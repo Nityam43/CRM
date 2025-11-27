@@ -198,7 +198,7 @@ const EnquiryList = () => {
                   {/* REFERENCE */}
                   <td className="px-4 py-3 text-gray-200">{item.reference}</td>
 
-                  {/* Symbols add karvana chhe */}
+                  {/* Message Symbols */}
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center gap-3 text-gray-300 text-lg">
                       <button
