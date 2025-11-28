@@ -2,13 +2,15 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Signup from "../components/Signup";
 import Login from "../components/Login";
 import Dashboard from "../pages/Dashboard";
-import AddEnquiry from "../pages/AddEnquiry";
-import EnquiryList from "../pages/EnquiryList";
-import CancelList from "../pages/CancelList";
 import UsersList from "../pages/UsersList";
 import Tasks from "../pages/Tasks";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Layout from "../components/Layout";
+import AddEnquiry from "../pages/Enquiry/AddEnquiry";
+import EnquiryList from "../pages/Enquiry/EnquiryList";
+import CancelList from "../pages/Enquiry/CancelList";
+import DemoList from "../pages/Demo/DemoList";
+import CancelDemoList from "../pages/Demo/CancelDemoList";
 
 const Mainroutes = () => {
   return (
@@ -53,6 +55,26 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <CancelList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/demo/list"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <DemoList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/demo/cancel"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <CancelDemoList />
             </Layout>
           </ProtectedRoute>
         }

@@ -18,6 +18,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [enquiryDropdownOpen, setEnquiryDropdownOpen] = useState(false);
+  const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -38,6 +39,11 @@ const Sidebar = () => {
     { label: "Add Enquiry", path: "/enquiry/add", icon: DocumentPlusIcon },
     { label: "Enquiry List", path: "/enquiry/list", icon: ListBulletIcon },
     { label: "Cancel List", path: "/enquiry/cancel", icon: XCircleIcon },
+  ];
+
+  const demoOptions = [
+    { label: "Demo List", path: "/demo/list", icon: ListBulletIcon },
+    { label: "Cancel Demo List", path: "/demo/cancel", icon: XCircleIcon },
   ];
 
   return (
@@ -170,6 +176,88 @@ const Sidebar = () => {
                     onClick={() => {
                       navigate(option.path);
                       setEnquiryDropdownOpen(false);
+                    }}
+                    className={
+                      "w-full flex items-center px-3 py-2 rounded transition text-sm " +
+                      (isActive(option.path)
+                        ? "bg-blue-600 text-white"
+                        : isDark
+                        ? "hover:bg-[#232941] text-gray-300"
+                        : "hover:bg-white text-gray-800")
+                    }
+                  >
+                    <IconComponent className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="whitespace-nowrap">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Demo Dropdown */}
+        <div>
+          <button
+            onClick={() => setDemoDropdownOpen(!demoDropdownOpen)}
+            className={
+              "w-full flex items-center px-3 py-3 rounded transition relative group " +
+              (isDark ? "hover:bg-[#232941]" : "hover:bg-gray-100")
+            }
+            title="Demo"
+          >
+            <ClipboardIcon
+              className={
+                "h-6 w-6 shrink-0 " +
+                (isDark ? "text-blue-400" : "text-blue-600")
+              }
+            />
+            <span
+              className={
+                "ml-4 whitespace-nowrap transition-opacity duration-300 " +
+                (isExpanded ? "opacity-100" : "opacity-0 hidden")
+              }
+            >
+              Demo
+            </span>
+            {isExpanded && (
+              <ChevronDownIcon
+                className={
+                  "h-4 w-4 shrink-0 ml-auto " +
+                  (isDark ? "text-blue-400" : "text-blue-600") +
+                  (demoDropdownOpen ? " rotate-180" : "")
+                }
+              />
+            )}
+            {!isExpanded && (
+              <div
+                className={
+                  "absolute left-20 px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap " +
+                  (isDark
+                    ? "bg-[#232941] text-white"
+                    : "bg-gray-900 text-white")
+                }
+              >
+                Demo
+              </div>
+            )}
+          </button>
+
+          {/* Demo dropdown menu */}
+          {demoDropdownOpen && isExpanded && (
+            <div
+              className={
+                "mt-2 ml-6 space-y-2 rounded p-2 " +
+                (isDark ? "bg-[#0d0f15]" : "bg-gray-100")
+              }
+            >
+              {demoOptions.map((option) => {
+                const IconComponent = option.icon;
+                return (
+                  <button
+                    key={option.path}
+                    onClick={() => {
+                      navigate(option.path);
+                      setDemoDropdownOpen(false);
                     }}
                     className={
                       "w-full flex items-center px-3 py-2 rounded transition text-sm " +

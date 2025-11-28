@@ -1,70 +1,84 @@
-import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
-import { useTheme } from "../ThemeContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { useTheme } from "../../ThemeContext";
 
-const CancelList = () => {
+const EnquiryList = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const cancelledEnquiries = [
+  const enquiries = [
     {
       id: 1,
-      name: "Mark Wilson",
-      contact1: "9876543210",
-      contact2: "9876500000",
-      course: "Digital Marketing - 3M",
-      enquiryDate: "10/10/2025 09:30 AM",
-      reminderDate: "12/10/2025 09:30 AM",
+      name: "Joshi Meetkumar",
+      contact1: "9898929866",
+      contact2: "9909854024",
+      course: "Video Editing | Digital Marketing",
+      enquiryDate: "09/10/2025 06:29 AM",
+      reminderDate: "11/10/2025 06:29 AM",
+      visitingDate: "09/10/2025 06:29",
       reference: "Social Media",
-      reason: "No longer interested",
-      status: "Cancelled",
+      status: "Enquiry",
       rating: 1,
-      register: "No",
     },
     {
       id: 2,
-      name: "Sara Johnson",
-      contact1: "9123456780",
-      contact2: "9123400000",
-      course: "Video Editing",
-      enquiryDate: "08/10/2025 11:15 AM",
-      reminderDate: "09/10/2025 11:15 AM",
-      reference: "Friend",
-      reason: "Joined other institute",
-      status: "Cancelled",
-      rating: 2,
-      register: "No",
+      name: "Patel Pritesh Dhaneshbhai",
+      contact1: "9021132895",
+      contact2: "7387013877",
+      course: "Digital Marketing",
+      enquiryDate: "17/09/2025 04:43 AM",
+      reminderDate: "19/09/2025 04:43 AM",
+      visitingDate: "17/09/2025 04:43",
+      reference: "Social Media",
+      status: "Enquiry",
+      rating: 1,
+    },
+    {
+      id: 3,
+      name: "Borad Ayushi Ghanshyambhai",
+      contact1: "9723540080",
+      contact2: "8140180172",
+      course: "Digital Marketing - 3M",
+      enquiryDate: "07/08/2025 06:41 AM",
+      reminderDate: "07/08/2025 06:41 AM",
+      visitingDate: "07/08/2025 06:41",
+      reference: "Happy Bhanderi - SS - REF",
+      status: "Enrolled",
+      rating: 1,
     },
   ];
 
   const [search, setSearch] = useState("");
 
-  const filtered = useMemo(() => {
-    if (!search.trim()) return cancelledEnquiries;
+  const filteredEnquiries = useMemo(() => {
+    if (!search.trim()) return enquiries;
     const q = search.toLowerCase();
-    return cancelledEnquiries.filter((e) =>
+    return enquiries.filter((e) =>
       [
         e.name,
         e.contact1,
         e.contact2,
         e.course,
+        e.reference,
         e.enquiryDate,
         e.reminderDate,
-        e.reference,
-        e.reason,
+        e.visitingDate,
         e.status,
       ]
         .join(" ")
         .toLowerCase()
         .includes(q)
     );
-  }, [search, cancelledEnquiries]);
+  }, [search, enquiries]);
 
   return (
     <div className="flex-1 px-6 py-6">
-      {/* top bar */}
+      {/* back button */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center text-blue-400 hover:text-blue-300 mb-4"
@@ -73,13 +87,14 @@ const CancelList = () => {
         <span className="text-sm">Back</span>
       </button>
 
+      {/* title */}
       <h2
         className={
-          "text-2xl font-bold mb-4 transition-colors  " +
+          "text-2xl font-bold mb-4 transition-colors duration-300 " +
           (isDark ? "text-white" : "text-gray-900")
         }
       >
-        Canceled Enquiry List
+        Enquiry List
       </h2>
 
       {/* main card */}
@@ -100,7 +115,7 @@ const CancelList = () => {
             <span>Show</span>
             <select
               className={
-                "px-2 py-1 rounded border transition-colors duration-300 " +
+                "border px-2 py-1 rounded transition-colors duration-300 " +
                 (isDark
                   ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
                   : "bg-white border-gray-300 text-gray-800")
@@ -125,12 +140,12 @@ const CancelList = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={
-                "px-3 py-1 rounded border focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors duration-300 " +
+                "border px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors duration-300 " +
                 (isDark
                   ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
                   : "bg-white border-gray-300 text-gray-800")
               }
-              placeholder=""
+              placeholder="Type to filter..."
             />
           </div>
         </div>
@@ -147,23 +162,28 @@ const CancelList = () => {
               <tr>
                 {[
                   "NO",
-                  "STUDENT NAME",
+                  "NAME",
                   "CONTACT",
                   "COURSES",
                   "ENQUIRY DATE",
                   "REMINDER DATE",
-                  "REFERENCES",
-                  "REASON",
+                  "VISITING DATE",
+                  "REFERENCE",
+                  "MESSAGE",
                   "STATUS",
                   "RATINGS",
-                  "REGISTER",
                   "ACTIONS",
                 ].map((h) => (
                   <th
                     key={h}
                     className={
                       "px-4 py-3 font-semibold " +
-                      (h === "ACTIONS" ? "text-center" : "text-left") +
+                      (h === "MESSAGE" ||
+                      h === "STATUS" ||
+                      h === "RATINGS" ||
+                      h === "ACTIONS"
+                        ? "text-center"
+                        : "text-left") +
                       " " +
                       (isDark ? "text-gray-300" : "text-gray-700")
                     }
@@ -175,23 +195,9 @@ const CancelList = () => {
             </thead>
 
             <tbody>
-              {filtered.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={12}
-                    className={
-                      "px-4 py-6 text-center " +
-                      (isDark ? "text-gray-400" : "text-gray-500")
-                    }
-                  >
-                    No data available in table
-                  </td>
-                </tr>
-              )}
-
-              {filtered.map((e, index) => (
+              {filteredEnquiries.map((item, index) => (
                 <tr
-                  key={e.id}
+                  key={item.id}
                   className={
                     "border-t transition-colors duration-300 " +
                     (isDark
@@ -199,6 +205,7 @@ const CancelList = () => {
                       : "border-gray-200 hover:bg-gray-50")
                   }
                 >
+                  {/* NO */}
                   <td
                     className={
                       "px-4 py-3 " +
@@ -207,102 +214,163 @@ const CancelList = () => {
                   >
                     {index + 1}
                   </td>
+
+                  {/* NAME */}
                   <td
                     className={
                       "px-4 py-3 whitespace-nowrap " +
                       (isDark ? "text-gray-200" : "text-gray-900")
                     }
                   >
-                    {e.name}
+                    {item.name}
                   </td>
+
+                  {/* CONTACT */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    <div>{e.contact1}</div>
-                    <div>{e.contact2}</div>
+                    <div>{item.contact1}</div>
+                    <div>{item.contact2}</div>
                   </td>
+
+                  {/* COURSES */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.course}
+                    {item.course}
                   </td>
+
+                  {/* ENQUIRY DATE */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.enquiryDate}
+                    {item.enquiryDate}
                   </td>
+
+                  {/* REMINDER DATE */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.reminderDate}
+                    {item.reminderDate}
                   </td>
+
+                  {/* VISITING DATE */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.reference}
+                    {item.visitingDate}
                   </td>
+
+                  {/* REFERENCE */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.reason}
+                    {item.reference}
                   </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.status}
+
+                  {/* MESSAGE icons */}
+                  <td className="px-4 py-3 text-center">
+                    <div
+                      className={
+                        "flex justify-center gap-3 text-lg transition-colors duration-300 " +
+                        (isDark ? "text-gray-300" : "text-gray-600")
+                      }
+                    >
+                      <button
+                        className="hover:text-green-500 transition-colors"
+                        title="WhatsApp"
+                      >
+                        <FontAwesomeIcon icon={faWhatsapp} />
+                      </button>
+                      <button
+                        className="hover:text-sky-500 transition-colors"
+                        title="Message"
+                      >
+                        <FontAwesomeIcon icon={faCommentDots} />
+                      </button>
+                      <button
+                        className="hover:text-blue-500 transition-colors"
+                        title="Call"
+                      >
+                        <FontAwesomeIcon icon={faPhone} />
+                      </button>
+                    </div>
                   </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.rating}
+
+                  {/* STATUS badge */}
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={
+                        "inline-block px-3 py-1 rounded-full border text-xs " +
+                        (item.status === "Enrolled"
+                          ? "border-green-500 text-green-500"
+                          : "border-yellow-500 text-yellow-500")
+                      }
+                    >
+                      {item.status}
+                    </span>
                   </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.register}
+
+                  {/* RATING pill */}
+                  <td className="px-4 py-3 text-center">
+                    <span className="inline-flex items-center justify-center w-7 h-7 rounded border border-red-500 text-red-500 text-xs">
+                      {item.rating}
+                    </span>
                   </td>
+
+                  {/* ACTION buttons */}
                   <td className="px-4 py-3">
-                    <div className="flex justify-center">
-                      <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white flex items-center gap-1">
-                        <TrashIcon className="h-4 w-4" />
-                        Delete
+                    <div className="flex justify-center gap-2">
+                      <button className="text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white">
+                        Edit
+                      </button>
+                      <button className="text-yellow-400 border border-yellow-500 px-3 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white">
+                        Demo
+                      </button>
+                      <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white">
+                        Cancel
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
+
+              {filteredEnquiries.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={12}
+                    className={
+                      "px-4 py-6 text-center " +
+                      (isDark ? "text-gray-400" : "text-gray-500")
+                    }
+                  >
+                    No enquiries found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* bottom info + pagination placeholder */}
+        {/* bottom info */}
         <div
           className={
             "flex flex-col md:flex-row md:items-center md:justify-between text-xs mt-3 transition-colors duration-300 " +
@@ -310,29 +378,18 @@ const CancelList = () => {
           }
         >
           <span>
-            Showing {filtered.length} to {filtered.length} of{" "}
-            {cancelledEnquiries.length} entries
+            Showing {filteredEnquiries.length} of {enquiries.length} entries
           </span>
-          <div className="flex gap-2 mt-2 md:mt-0">
+          <div className="flex gap-1 mt-2 md:mt-0">
             <button
               className={
-                "px-3 py-1 rounded border transition-colors duration-300 " +
+                "px-2 py-1 rounded border transition-colors duration-300 " +
                 (isDark
                   ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
                   : "bg-white border-gray-300 text-gray-800")
               }
             >
-              Previous
-            </button>
-            <button
-              className={
-                "px-3 py-1 rounded border transition-colors duration-300 " +
-                (isDark
-                  ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
-                  : "bg-white border-gray-300 text-gray-800")
-              }
-            >
-              Next
+              1
             </button>
           </div>
         </div>
@@ -341,4 +398,4 @@ const CancelList = () => {
   );
 };
 
-export default CancelList;
+export default EnquiryList;

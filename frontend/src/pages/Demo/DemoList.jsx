@@ -1,84 +1,66 @@
+import React, { useState, useMemo } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useTheme } from "../../ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { useTheme } from "../ThemeContext";
+import { faPhone } from "@fortawesome/free-solid-svg-icons";
 
-const EnquiryList = () => {
+const demos = [
+  {
+    id: 1,
+    name: "Borad Ayushi Ghanshyambhai",
+    contact1: "9723540080",
+    contact2: "8140180172",
+    course: "Digital Marketing - 3M",
+    reference: "Happy Bhanderi - SS - REF",
+    date: "12/08/2025 06:54 AM",
+    time: "3 PM",
+    status: "Enrolled",
+  },
+  {
+    id: 2,
+    name: "Borad Payal Ghanshyambhai",
+    contact1: "7016529543",
+    contact2: "8140180172",
+    course: "Digital Marketing - 3M",
+    reference: "Happy Bhanderi - SS - REF",
+    date: "12/08/2025 06:54 AM",
+    time: "2 PM",
+    status: "Enrolled",
+  },
+];
+
+const DemoList = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const enquiries = [
-    {
-      id: 1,
-      name: "Joshi Meetkumar",
-      contact1: "9898929866",
-      contact2: "9909854024",
-      course: "Video Editing | Digital Marketing",
-      enquiryDate: "09/10/2025 06:29 AM",
-      reminderDate: "11/10/2025 06:29 AM",
-      visitingDate: "09/10/2025 06:29",
-      reference: "Social Media",
-      status: "Enquiry",
-      rating: 1,
-    },
-    {
-      id: 2,
-      name: "Patel Pritesh Dhaneshbhai",
-      contact1: "9021132895",
-      contact2: "7387013877",
-      course: "Digital Marketing",
-      enquiryDate: "17/09/2025 04:43 AM",
-      reminderDate: "19/09/2025 04:43 AM",
-      visitingDate: "17/09/2025 04:43",
-      reference: "Social Media",
-      status: "Enquiry",
-      rating: 1,
-    },
-    {
-      id: 3,
-      name: "Borad Ayushi Ghanshyambhai",
-      contact1: "9723540080",
-      contact2: "8140180172",
-      course: "Digital Marketing - 3M",
-      enquiryDate: "07/08/2025 06:41 AM",
-      reminderDate: "07/08/2025 06:41 AM",
-      visitingDate: "07/08/2025 06:41",
-      reference: "Happy Bhanderi - SS - REF",
-      status: "Enrolled",
-      rating: 1,
-    },
-  ];
-
   const [search, setSearch] = useState("");
 
-  const filteredEnquiries = useMemo(() => {
-    if (!search.trim()) return enquiries;
+  const filteredDemos = useMemo(() => {
+    if (!search.trim()) return demos;
     const q = search.toLowerCase();
-    return enquiries.filter((e) =>
+    return demos.filter((d) =>
       [
-        e.name,
-        e.contact1,
-        e.contact2,
-        e.course,
-        e.reference,
-        e.enquiryDate,
-        e.reminderDate,
-        e.visitingDate,
-        e.status,
+        d.name,
+        d.contact1,
+        d.contact2,
+        d.course,
+        d.reference,
+        d.date,
+        d.time,
+        d.status,
       ]
         .join(" ")
         .toLowerCase()
         .includes(q)
     );
-  }, [search, enquiries]);
+  }, [search]);
 
   return (
     <div className="flex-1 px-6 py-6">
-      {/* back button */}
+      {/* Back button */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center text-blue-400 hover:text-blue-300 mb-4"
@@ -87,24 +69,24 @@ const EnquiryList = () => {
         <span className="text-sm">Back</span>
       </button>
 
-      {/* title */}
+      {/* Title */}
       <h2
         className={
           "text-2xl font-bold mb-4 transition-colors duration-300 " +
           (isDark ? "text-white" : "text-gray-900")
         }
       >
-        Enquiry List
+        Demo List
       </h2>
 
-      {/* main card */}
+      {/* Main card */}
       <div
         className={
           "rounded-xl p-4 transition-colors duration-300 " +
           (isDark ? "bg-[#232941]" : "bg-white shadow")
         }
       >
-        {/* top controls */}
+        {/* Top controls */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 text-sm">
           <div
             className={
@@ -150,7 +132,7 @@ const EnquiryList = () => {
           </div>
         </div>
 
-        {/* table */}
+        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead
@@ -162,26 +144,21 @@ const EnquiryList = () => {
               <tr>
                 {[
                   "NO",
-                  "NAME",
+                  "STUDENT NAME",
                   "CONTACT",
-                  "COURSES",
-                  "ENQUIRY DATE",
-                  "REMINDER DATE",
-                  "VISITING DATE",
+                  "COURSE",
                   "REFERENCE",
+                  "DATE",
+                  "TIME",
                   "MESSAGE",
                   "STATUS",
-                  "RATINGS",
                   "ACTIONS",
                 ].map((h) => (
                   <th
                     key={h}
                     className={
                       "px-4 py-3 font-semibold " +
-                      (h === "MESSAGE" ||
-                      h === "STATUS" ||
-                      h === "RATINGS" ||
-                      h === "ACTIONS"
+                      (["MESSAGE", "STATUS", "ACTIONS"].includes(h)
                         ? "text-center"
                         : "text-left") +
                       " " +
@@ -195,7 +172,7 @@ const EnquiryList = () => {
             </thead>
 
             <tbody>
-              {filteredEnquiries.map((item, index) => (
+              {filteredDemos.map((item, index) => (
                 <tr
                   key={item.id}
                   className={
@@ -215,7 +192,7 @@ const EnquiryList = () => {
                     {index + 1}
                   </td>
 
-                  {/* NAME */}
+                  {/* STUDENT NAME */}
                   <td
                     className={
                       "px-4 py-3 whitespace-nowrap " +
@@ -236,7 +213,7 @@ const EnquiryList = () => {
                     <div>{item.contact2}</div>
                   </td>
 
-                  {/* COURSES */}
+                  {/* COURSE */}
                   <td
                     className={
                       "px-4 py-3 " +
@@ -244,36 +221,6 @@ const EnquiryList = () => {
                     }
                   >
                     {item.course}
-                  </td>
-
-                  {/* ENQUIRY DATE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.enquiryDate}
-                  </td>
-
-                  {/* REMINDER DATE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.reminderDate}
-                  </td>
-
-                  {/* VISITING DATE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.visitingDate}
                   </td>
 
                   {/* REFERENCE */}
@@ -284,6 +231,26 @@ const EnquiryList = () => {
                     }
                   >
                     {item.reference}
+                  </td>
+
+                  {/* DATE */}
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {item.date}
+                  </td>
+
+                  {/* TIME */}
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {item.time}
                   </td>
 
                   {/* MESSAGE icons */}
@@ -299,12 +266,6 @@ const EnquiryList = () => {
                         title="WhatsApp"
                       >
                         <FontAwesomeIcon icon={faWhatsapp} />
-                      </button>
-                      <button
-                        className="hover:text-sky-500 transition-colors"
-                        title="Message"
-                      >
-                        <FontAwesomeIcon icon={faCommentDots} />
                       </button>
                       <button
                         className="hover:text-blue-500 transition-colors"
@@ -329,21 +290,14 @@ const EnquiryList = () => {
                     </span>
                   </td>
 
-                  {/* RATING pill */}
-                  <td className="px-4 py-3 text-center">
-                    <span className="inline-flex items-center justify-center w-7 h-7 rounded border border-red-500 text-red-500 text-xs">
-                      {item.rating}
-                    </span>
-                  </td>
-
                   {/* ACTION buttons */}
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-2">
                       <button className="text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white">
                         Edit
                       </button>
-                      <button className="text-yellow-400 border border-yellow-500 px-3 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white">
-                        Demo
+                      <button className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white">
+                        Enroll
                       </button>
                       <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white">
                         Cancel
@@ -353,16 +307,16 @@ const EnquiryList = () => {
                 </tr>
               ))}
 
-              {filteredEnquiries.length === 0 && (
+              {filteredDemos.length === 0 && (
                 <tr>
                   <td
-                    colSpan={12}
+                    colSpan={10}
                     className={
                       "px-4 py-6 text-center " +
                       (isDark ? "text-gray-400" : "text-gray-500")
                     }
                   >
-                    No enquiries found.
+                    No demos found.
                   </td>
                 </tr>
               )}
@@ -370,7 +324,7 @@ const EnquiryList = () => {
           </table>
         </div>
 
-        {/* bottom info */}
+        {/* Bottom info */}
         <div
           className={
             "flex flex-col md:flex-row md:items-center md:justify-between text-xs mt-3 transition-colors duration-300 " +
@@ -378,7 +332,7 @@ const EnquiryList = () => {
           }
         >
           <span>
-            Showing {filteredEnquiries.length} of {enquiries.length} entries
+            Showing {filteredDemos.length} of {demos.length} entries
           </span>
           <div className="flex gap-1 mt-2 md:mt-0">
             <button
@@ -398,4 +352,4 @@ const EnquiryList = () => {
   );
 };
 
-export default EnquiryList;
+export default DemoList;
