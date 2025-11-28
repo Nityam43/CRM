@@ -1,9 +1,12 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
+import { useTheme } from "../ThemeContext";
 
 const CancelList = () => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const cancelledEnquiries = [
     {
@@ -70,17 +73,39 @@ const CancelList = () => {
         <span className="text-sm">Back</span>
       </button>
 
-      <h2 className="text-2xl font-bold text-white mb-4">
+      <h2
+        className={
+          "text-2xl font-bold mb-4 transition-colors  " +
+          (isDark ? "text-white" : "text-gray-900")
+        }
+      >
         Canceled Enquiry List
       </h2>
 
       {/* main card */}
-      <div className="bg-[#232941] rounded-xl p-4">
+      <div
+        className={
+          "rounded-xl p-4 transition-colors duration-300 " +
+          (isDark ? "bg-[#232941]" : "bg-white shadow")
+        }
+      >
         {/* top controls */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 text-sm">
-          <div className="flex items-center gap-2 text-gray-300">
+          <div
+            className={
+              "flex items-center gap-2 transition-colors duration-300 " +
+              (isDark ? "text-gray-300" : "text-gray-700")
+            }
+          >
             <span>Show</span>
-            <select className="bg-[#1E2331] border border-[#2c3250] text-gray-200 px-2 py-1 rounded">
+            <select
+              className={
+                "px-2 py-1 rounded border transition-colors duration-300 " +
+                (isDark
+                  ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                  : "bg-white border-gray-300 text-gray-800")
+              }
+            >
               <option>10</option>
               <option>25</option>
               <option>50</option>
@@ -88,13 +113,23 @@ const CancelList = () => {
             <span>entries</span>
           </div>
 
-          <div className="flex items-center gap-2 text-gray-300">
+          <div
+            className={
+              "flex items-center gap-2 transition-colors duration-300 " +
+              (isDark ? "text-gray-300" : "text-gray-700")
+            }
+          >
             <span>Search:</span>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-[#1E2331] border border-[#2c3250] text-gray-200 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className={
+                "px-3 py-1 rounded border focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors duration-300 " +
+                (isDark
+                  ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                  : "bg-white border-gray-300 text-gray-800")
+              }
               placeholder=""
             />
           </div>
@@ -103,44 +138,39 @@ const CancelList = () => {
         {/* table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-[#1E2331]">
+            <thead
+              className={
+                "transition-colors duration-300 " +
+                (isDark ? "bg-[#1E2331]" : "bg-gray-100")
+              }
+            >
               <tr>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  NO
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  STUDENT NAME
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  CONTACT
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  COURSES
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  ENQUIRY DATE
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  REMINDER DATE
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  REFERENCES
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  REASON
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  STATUS
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  RATINGS
-                </th>
-                <th className="px-4 py-3 text-left text-gray-300 font-semibold">
-                  REGISTER
-                </th>
-                <th className="px-4 py-3 text-center text-gray-300 font-semibold">
-                  ACTIONS
-                </th>
+                {[
+                  "NO",
+                  "STUDENT NAME",
+                  "CONTACT",
+                  "COURSES",
+                  "ENQUIRY DATE",
+                  "REMINDER DATE",
+                  "REFERENCES",
+                  "REASON",
+                  "STATUS",
+                  "RATINGS",
+                  "REGISTER",
+                  "ACTIONS",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className={
+                      "px-4 py-3 font-semibold " +
+                      (h === "ACTIONS" ? "text-center" : "text-left") +
+                      " " +
+                      (isDark ? "text-gray-300" : "text-gray-700")
+                    }
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
 
@@ -149,7 +179,10 @@ const CancelList = () => {
                 <tr>
                   <td
                     colSpan={12}
-                    className="px-4 py-6 text-center text-gray-400"
+                    className={
+                      "px-4 py-6 text-center " +
+                      (isDark ? "text-gray-400" : "text-gray-500")
+                    }
                   >
                     No data available in table
                   </td>
@@ -159,24 +192,102 @@ const CancelList = () => {
               {filtered.map((e, index) => (
                 <tr
                   key={e.id}
-                  className="border-t border-[#2c3250] hover:bg-[#1E2331] transition"
+                  className={
+                    "border-t transition-colors duration-300 " +
+                    (isDark
+                      ? "border-[#2c3250] hover:bg-[#1E2331]"
+                      : "border-gray-200 hover:bg-gray-50")
+                  }
                 >
-                  <td className="px-4 py-3 text-gray-300">{index + 1}</td>
-                  <td className="px-4 py-3 text-gray-200 whitespace-nowrap">
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-300" : "text-gray-700")
+                    }
+                  >
+                    {index + 1}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 whitespace-nowrap " +
+                      (isDark ? "text-gray-200" : "text-gray-900")
+                    }
+                  >
                     {e.name}
                   </td>
-                  <td className="px-4 py-3 text-gray-200">
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
                     <div>{e.contact1}</div>
                     <div>{e.contact2}</div>
                   </td>
-                  <td className="px-4 py-3 text-gray-200">{e.course}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.enquiryDate}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.reminderDate}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.reference}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.reason}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.status}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.rating}</td>
-                  <td className="px-4 py-3 text-gray-200">{e.register}</td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.course}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.enquiryDate}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.reminderDate}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.reference}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.reason}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.status}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.rating}
+                  </td>
+                  <td
+                    className={
+                      "px-4 py-3 " +
+                      (isDark ? "text-gray-200" : "text-gray-800")
+                    }
+                  >
+                    {e.register}
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-center">
                       <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white flex items-center gap-1">
@@ -192,16 +303,35 @@ const CancelList = () => {
         </div>
 
         {/* bottom info + pagination placeholder */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between text-xs text-gray-400 mt-3">
+        <div
+          className={
+            "flex flex-col md:flex-row md:items-center md:justify-between text-xs mt-3 transition-colors duration-300 " +
+            (isDark ? "text-gray-400" : "text-gray-600")
+          }
+        >
           <span>
             Showing {filtered.length} to {filtered.length} of{" "}
             {cancelledEnquiries.length} entries
           </span>
           <div className="flex gap-2 mt-2 md:mt-0">
-            <button className="px-3 py-1 bg-[#1E2331] border border-[#2c3250] rounded">
+            <button
+              className={
+                "px-3 py-1 rounded border transition-colors duration-300 " +
+                (isDark
+                  ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                  : "bg-white border-gray-300 text-gray-800")
+              }
+            >
               Previous
             </button>
-            <button className="px-3 py-1 bg-[#1E2331] border border-[#2c3250] rounded">
+            <button
+              className={
+                "px-3 py-1 rounded border transition-colors duration-300 " +
+                (isDark
+                  ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                  : "bg-white border-gray-300 text-gray-800")
+              }
+            >
               Next
             </button>
           </div>
