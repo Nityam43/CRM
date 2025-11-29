@@ -11,6 +11,8 @@ import EnquiryList from "../pages/Enquiry/EnquiryList";
 import CancelList from "../pages/Enquiry/CancelList";
 import DemoList from "../pages/Demo/DemoList";
 import CancelDemoList from "../pages/Demo/CancelDemoList";
+import EnrollList from "../pages/Enroll/EnrollList";
+import CancelEnrollList from "../pages/Enroll/CancelEnrollList";
 
 const Mainroutes = () => {
   return (
@@ -75,6 +77,26 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <CancelDemoList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/enroll/list"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EnrollList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/enroll/cancel"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <CancelEnrollList />
             </Layout>
           </ProtectedRoute>
         }
