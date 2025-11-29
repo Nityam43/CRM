@@ -14,6 +14,8 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
 import { useTheme } from "../ThemeContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBell } from "@fortawesome/free-regular-svg-icons";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -528,6 +530,46 @@ const Sidebar = () => {
             </div>
           )}
         </button>
+
+        {/* Enquiry reminder chip */}
+        <div className="mt-6 px-2 pb-4">
+          {isExpanded ? (
+            <button
+              onClick={() => navigate("/enquiry/reminders")}
+              className={
+                "flex w-full items-center justify-start rounded-md px-3 py-2 text-[11px] font-medium transition-colors " +
+                (isActive("/enquiry/reminders")
+                  ? "bg-blue-600 text-white"
+                  : isDark
+                  ? "bg-[#232941] hover:bg-[#2d3555] text-gray-200"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-800")
+              }
+              title="Enquiry reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  0
+                </span>
+              </span>
+
+              <span className="ml-2">Enquiry</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/enquiry/reminders")}
+              className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-xs"
+              title="Enquiry reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  0
+                </span>
+              </span>
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* Logout */}
