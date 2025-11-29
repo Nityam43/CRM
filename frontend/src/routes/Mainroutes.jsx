@@ -13,6 +13,8 @@ import DemoList from "../pages/Demo/DemoList";
 import CancelDemoList from "../pages/Demo/CancelDemoList";
 import EnrollList from "../pages/Enroll/EnrollList";
 import CancelEnrollList from "../pages/Enroll/CancelEnrollList";
+import FeesList from "../pages/Fees/FeesList";
+import FeesPay from "../pages/Fees/FeesPay";
 
 const Mainroutes = () => {
   return (
@@ -117,6 +119,26 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <Tasks />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/list"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <FeesList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/pay"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <FeesPay />
             </Layout>
           </ProtectedRoute>
         }

@@ -9,6 +9,7 @@ import {
   ListBulletIcon,
   XCircleIcon,
   ChevronRightIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
@@ -20,6 +21,7 @@ const Sidebar = () => {
   const [enquiryDropdownOpen, setEnquiryDropdownOpen] = useState(false);
   const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
   const [enrollDropdownOpen, setEnrollDropdownOpen] = useState(false);
+  const [feesDropdownOpen, setFeesDropdownOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -50,6 +52,11 @@ const Sidebar = () => {
   const enrollOptions = [
     { label: "Enroll List", path: "/enroll/list", icon: ListBulletIcon },
     { label: "Cancel Enroll List", path: "/enroll/cancel", icon: XCircleIcon },
+  ];
+
+  const feesOptions = [
+    { label: "Fees List", path: "/fees/list" },
+    { label: "Fees Pay", path: "/fees/pay" },
   ];
 
   return (
@@ -361,6 +368,83 @@ const Sidebar = () => {
                   </button>
                 );
               })}
+            </div>
+          )}
+        </div>
+
+        {/* Fees Dropdown */}
+        <div>
+          <button
+            onClick={() => setFeesDropdownOpen(!feesDropdownOpen)}
+            className={
+              "w-full flex items-center px-3 py-3 rounded transition relative group " +
+              (isDark ? "hover:bg-[#232941]" : "hover:bg-gray-100")
+            }
+            title="Fees"
+          >
+            <CurrencyDollarIcon
+              className={
+                "h-6 w-6 shrink-0 " +
+                (isDark ? "text-blue-400" : "text-blue-600")
+              }
+            />
+            <span
+              className={
+                "ml-4 whitespace-nowrap transition-opacity duration-300 " +
+                (isExpanded ? "opacity-100" : "opacity-0 hidden")
+              }
+            >
+              Fees
+            </span>
+            {isExpanded && (
+              <ChevronDownIcon
+                className={
+                  "h-4 w-4 shrink-0 ml-auto " +
+                  (isDark ? "text-blue-400" : "text-blue-600") +
+                  (feesDropdownOpen ? " rotate-180" : "")
+                }
+              />
+            )}
+            {!isExpanded && (
+              <div
+                className={
+                  "absolute left-20 px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap " +
+                  (isDark
+                    ? "bg-[#232941] text-white"
+                    : "bg-gray-900 text-white")
+                }
+              >
+                Fees
+              </div>
+            )}
+          </button>
+
+          {feesDropdownOpen && isExpanded && (
+            <div
+              className={
+                "mt-2 ml-6 space-y-2 rounded p-2 " +
+                (isDark ? "bg-[#0d0f15]" : "bg-gray-100")
+              }
+            >
+              {feesOptions.map((option) => (
+                <button
+                  key={option.path}
+                  onClick={() => {
+                    navigate(option.path);
+                    setFeesDropdownOpen(false);
+                  }}
+                  className={
+                    "w-full flex items-center px-3 py-2 rounded transition text-sm " +
+                    (isActive(option.path)
+                      ? "bg-blue-600 text-white"
+                      : isDark
+                      ? "hover:bg-[#232941] text-gray-300"
+                      : "hover:bg-white text-gray-800")
+                  }
+                >
+                  <span className="whitespace-nowrap">{option.label}</span>
+                </button>
+              ))}
             </div>
           )}
         </div>
