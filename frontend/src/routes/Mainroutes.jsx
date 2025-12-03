@@ -16,6 +16,7 @@ import CancelEnrollList from "../pages/Enroll/CancelEnrollList";
 import FeesList from "../pages/Fees/FeesList";
 import FeesPay from "../pages/Fees/FeesPay";
 import EnquiryReminders from "../pages/Enquiry/EnquiryReminders";
+import DemoReminder from "../pages/Demo/DemoReminder";
 
 const Mainroutes = () => {
   return (
@@ -150,6 +151,16 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <EnquiryReminders />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/demo/reminders"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <DemoReminder />
             </Layout>
           </ProtectedRoute>
         }

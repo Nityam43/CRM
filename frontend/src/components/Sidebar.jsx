@@ -490,6 +490,45 @@ const Sidebar = () => {
             </button>
           )}
         </div>
+
+        {/* Demo reminder */}
+        <div className="px-2 pb-4">
+          {isExpanded ? (
+            <button
+              onClick={() => navigate("/demo/reminders")}
+              className={
+                "flex w-full items-center justify-start rounded-md px-3 py-2 text-[11px] font-medium transition-colors " +
+                (isActive("/demo/reminders")
+                  ? "bg-blue-600 text-white"
+                  : isDark
+                  ? "bg-[#232941] hover:bg-[#2d3555] text-gray-200"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-800")
+              }
+              title="Demo reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  0
+                </span>
+              </span>
+              <span className="ml-2">Demo</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/demo/reminders")}
+              className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-xs"
+              title="Demo reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  0
+                </span>
+              </span>
+            </button>
+          )}
+        </div>
       </nav>
 
       {/* Logout */}
