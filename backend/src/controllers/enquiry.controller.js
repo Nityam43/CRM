@@ -16,6 +16,19 @@ const createEnquiry = async (req, res) => {
     }
 };
 
+const getEnquiries = async (req, res) => {
+    try {
+        const enquiries = await Enquiry.find();
+        res.status(200).json(enquiries);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching enquiries',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     createEnquiry,
+    getEnquiries,
 };

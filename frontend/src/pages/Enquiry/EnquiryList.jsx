@@ -1,80 +1,80 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../../ThemeContext";
+import api from "../../api/axios";
 
 const EnquiryList = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const enquiries = [
-    {
-      id: 1,
-      name: "Joshi Meetkumar",
-      contact1: "9898929866",
-      contact2: "9909854024",
-      course: "Video Editing | Digital Marketing",
-      enquiryDate: "09/10/2025 06:29 AM",
-      reminderDate: "11/10/2025 06:29 AM",
-      visitingDate: "09/10/2025 06:29",
-      reference: "Social Media",
-      status: "Enquiry",
-      rating: 1,
-    },
-    {
-      id: 2,
-      name: "Patel Pritesh Dhaneshbhai",
-      contact1: "9021132895",
-      contact2: "7387013877",
-      course: "Digital Marketing",
-      enquiryDate: "17/09/2025 04:43 AM",
-      reminderDate: "19/09/2025 04:43 AM",
-      visitingDate: "17/09/2025 04:43",
-      reference: "Social Media",
-      status: "Enquiry",
-      rating: 1,
-    },
-    {
-      id: 3,
-      name: "Borad Ayushi Ghanshyambhai",
-      contact1: "9723540080",
-      contact2: "8140180172",
-      course: "Digital Marketing - 3M",
-      enquiryDate: "07/08/2025 06:41 AM",
-      reminderDate: "07/08/2025 06:41 AM",
-      visitingDate: "07/08/2025 06:41",
-      reference: "Happy Bhanderi - SS - REF",
-      status: "Enrolled",
-      rating: 1,
-    },
-  ];
-
+  const [enquiries, setEnquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchEnquiries = async () => {
+      try {
+        const response = await api.get("/enquiry");
+        setEnquiries(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEnquiries();
+  }, []);
 
   const filteredEnquiries = useMemo(() => {
     if (!search.trim()) return enquiries;
     const q = search.toLowerCase();
     return enquiries.filter((e) =>
       [
-        e.name,
-        e.contact1,
-        e.contact2,
-        e.course,
+        e.studentName,
+        e.firstMobile,
+        e.secondMobile,
+        e.education,
         e.reference,
-        e.enquiryDate,
+        e.leadDate,
         e.reminderDate,
         e.visitingDate,
         e.status,
+        e.enquiryRating,
       ]
         .join(" ")
         .toLowerCase()
         .includes(q)
     );
   }, [search, enquiries]);
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 px-6 py-6">
@@ -178,10 +178,7 @@ const EnquiryList = () => {
                     key={h}
                     className={
                       "px-4 py-3 font-semibold " +
-                      (h === "MESSAGE" ||
-                      h === "STATUS" ||
-                      h === "RATINGS" ||
-                      h === "ACTIONS"
+                      (["MESSAGE", "STATUS", "RATINGS", "ACTIONS"].includes(h)
                         ? "text-center"
                         : "text-left") +
                       " " +
@@ -197,7 +194,7 @@ const EnquiryList = () => {
             <tbody>
               {filteredEnquiries.map((item, index) => (
                 <tr
-                  key={item.id}
+                  key={item._id}
                   className={
                     "border-t transition-colors duration-300 " +
                     (isDark
@@ -222,7 +219,7 @@ const EnquiryList = () => {
                       (isDark ? "text-gray-200" : "text-gray-900")
                     }
                   >
-                    {item.name}
+                    {item.studentName}
                   </td>
 
                   {/* CONTACT */}
@@ -232,28 +229,28 @@ const EnquiryList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    <div>{item.contact1}</div>
-                    <div>{item.contact2}</div>
+                    <div>{item.firstMobile}</div>
+                    <div>{item.secondMobile}</div>
                   </td>
 
-                  {/* COURSES */}
+                  {/* COURSES (if you have a course field, otherwise '-') */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {item.course}
+                    {item.education || "-"}
                   </td>
 
-                  {/* ENQUIRY DATE */}
+                  {/* ENQUIRY DATE (leadDate) */}
                   <td
                     className={
                       "px-4 py-3 " +
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {item.enquiryDate}
+                    {formatDate(item.leadDate)}
                   </td>
 
                   {/* REMINDER DATE */}
@@ -263,7 +260,7 @@ const EnquiryList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {item.reminderDate}
+                    {formatDate(item.reminderDate)}
                   </td>
 
                   {/* VISITING DATE */}
@@ -273,7 +270,7 @@ const EnquiryList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {item.visitingDate}
+                    {formatDate(item.visitingDate)}
                   </td>
 
                   {/* REFERENCE */}
@@ -283,7 +280,7 @@ const EnquiryList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {item.reference}
+                    {item.reference || "-"}
                   </td>
 
                   {/* MESSAGE icons */}
@@ -315,7 +312,7 @@ const EnquiryList = () => {
                     </div>
                   </td>
 
-                  {/* STATUS badge */}
+                  {/* STATUS badge (use item.status if you set it, else 'Pending') */}
                   <td className="px-4 py-3 text-center">
                     <span
                       className={
@@ -325,14 +322,14 @@ const EnquiryList = () => {
                           : "border-yellow-500 text-yellow-500")
                       }
                     >
-                      {item.status}
+                      {item.status || "Pending"}
                     </span>
                   </td>
 
-                  {/* RATING pill */}
+                  {/* RATING pill – from enquiryRating */}
                   <td className="px-4 py-3 text-center">
                     <span className="inline-flex items-center justify-center w-7 h-7 rounded border border-red-500 text-red-500 text-xs">
-                      {item.rating}
+                      {item.enquiryRating || "-"}
                     </span>
                   </td>
 
