@@ -28,7 +28,41 @@ const getEnquiries = async (req, res) => {
     }
 };
 
+const getEnquiryById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const enquiry = await Enquiry.findById(id);
+        if (!enquiry) {
+            return res.status(404).json({ message: 'Enquiry not found' });
+        }
+        res.status(200).json(enquiry);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching enquiry',
+            error: error.message,
+        });
+    }
+};
+
+const updateEnquiry = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedEnquiry = await Enquiry.findByIdAndUpdate(id, req.body, { new: true });
+        if (!updatedEnquiry) {
+            return res.status(404).json({ message: 'Enquiry not found' });
+        }
+        res.status(200).json(updatedEnquiry);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error updating enquiry',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     createEnquiry,
     getEnquiries,
+    getEnquiryById,
+    updateEnquiry,
 };

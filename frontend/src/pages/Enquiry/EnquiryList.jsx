@@ -32,6 +32,10 @@ const EnquiryList = () => {
     fetchEnquiries();
   }, []);
 
+  const handleEditClick = (enquiry) => {
+    navigate(`/enquiry/edit/${enquiry._id}`);
+  };
+
   const filteredEnquiries = useMemo(() => {
     if (!search.trim()) return enquiries;
     const q = search.toLowerCase();
@@ -336,7 +340,10 @@ const EnquiryList = () => {
                   {/* ACTION buttons */}
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-2">
-                      <button className="text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white">
+                      <button
+                        onClick={() => handleEditClick(item)}
+                        className="text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white"
+                      >
                         Edit
                       </button>
                       <button className="text-yellow-400 border border-yellow-500 px-3 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white">

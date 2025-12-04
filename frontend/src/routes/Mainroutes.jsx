@@ -7,6 +7,7 @@ import Tasks from "../pages/Tasks";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Layout from "../components/Layout";
 import AddEnquiry from "../pages/Enquiry/AddEnquiry";
+import EditEnquiry from "../pages/Enquiry/EditEnquiry";
 import EnquiryList from "../pages/Enquiry/EnquiryList";
 import CancelList from "../pages/Enquiry/CancelList";
 import DemoList from "../pages/Demo/DemoList";
@@ -41,6 +42,16 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <AddEnquiry />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/enquiry/edit/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditEnquiry />
             </Layout>
           </ProtectedRoute>
         }
