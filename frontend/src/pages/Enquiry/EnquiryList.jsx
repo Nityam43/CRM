@@ -21,7 +21,7 @@ const EnquiryList = () => {
     const fetchEnquiries = async () => {
       try {
         const response = await api.get("/enquiry");
-        setEnquiries(response.data);
+        setEnquiries(response.data.filter((e) => e.status !== "Cancelled"));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,6 +34,24 @@ const EnquiryList = () => {
 
   const handleEditClick = (enquiry) => {
     navigate(`/enquiry/edit/${enquiry._id}`);
+  };
+
+  const handleCancelClick = async (enquiry) => {
+    if (
+      !window.confirm(
+        `Are you sure you want to cancel the enquiry for "${enquiry.studentName}"?`
+      )
+    )
+      return;
+
+    try {
+      await api.put(`/enquiry/cancel/${enquiry._id}`);
+      setEnquiries((prev) => prev.filter((e) => e._id !== enquiry._id));
+    } catch (err) {
+      setError(
+        err.response?.data?.message || err.message || "Failed to cancel enquiry"
+      );
+    }
   };
 
   const filteredEnquiries = useMemo(() => {
@@ -349,7 +367,10 @@ const EnquiryList = () => {
                       <button className="text-yellow-400 border border-yellow-500 px-3 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white">
                         Demo
                       </button>
-                      <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white">
+                      <button
+                        onClick={() => handleCancelClick(item)}
+                        className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
+                      >
                         Cancel
                       </button>
                     </div>

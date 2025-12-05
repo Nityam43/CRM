@@ -67,6 +67,10 @@ const enquirySchema = new mongoose.Schema({
     note: {
         type: String,
     },
+    status: {
+        type: String,
+        default: 'Pending',
+    },
 }, { timestamps: true });
 
 const Enquiry = mongoose.model('Enquiry', enquirySchema);

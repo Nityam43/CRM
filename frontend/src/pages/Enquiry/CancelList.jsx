@@ -1,59 +1,62 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTheme } from "../../ThemeContext";
+import api from "../../api/axios";
 
 const CancelList = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
-  const cancelledEnquiries = [
-    {
-      id: 1,
-      name: "Mark Wilson",
-      contact1: "9876543210",
-      contact2: "9876500000",
-      course: "Digital Marketing - 3M",
-      enquiryDate: "10/10/2025 09:30 AM",
-      reminderDate: "12/10/2025 09:30 AM",
-      reference: "Social Media",
-      reason: "No longer interested",
-      status: "Cancelled",
-      rating: 1,
-      register: "No",
-    },
-    {
-      id: 2,
-      name: "Sara Johnson",
-      contact1: "9123456780",
-      contact2: "9123400000",
-      course: "Video Editing",
-      enquiryDate: "08/10/2025 11:15 AM",
-      reminderDate: "09/10/2025 11:15 AM",
-      reference: "Friend",
-      reason: "Joined other institute",
-      status: "Cancelled",
-      rating: 2,
-      register: "No",
-    },
-  ];
-
+  const [cancelledEnquiries, setCancelledEnquiries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchCancelledEnquiries = async () => {
+      try {
+        const response = await api.get("/enquiry/status/Cancelled");
+        setCancelledEnquiries(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCancelledEnquiries();
+  }, []);
+
+  const handleDeleteClick = async (enquiryId) => {
+    if (!window.confirm("Are you sure you want to delete this enquiry?"))
+      return;
+
+    try {
+      await api.delete(`/enquiry/${enquiryId}`);
+      setCancelledEnquiries((prev) =>
+        prev.filter((e) => e._id !== enquiryId)
+      );
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to delete enquiry"
+      );
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!search.trim()) return cancelledEnquiries;
     const q = search.toLowerCase();
     return cancelledEnquiries.filter((e) =>
       [
-        e.name,
-        e.contact1,
-        e.contact2,
-        e.course,
-        e.enquiryDate,
-        e.reminderDate,
+        e.studentName,
+        e.firstMobile,
+        e.secondMobile,
+        e.education,
         e.reference,
-        e.reason,
         e.status,
       ]
         .join(" ")
@@ -61,6 +64,28 @@ const CancelList = () => {
         .includes(q)
     );
   }, [search, cancelledEnquiries]);
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 px-6 py-6">
@@ -153,10 +178,8 @@ const CancelList = () => {
                   "ENQUIRY DATE",
                   "REMINDER DATE",
                   "REFERENCES",
-                  "REASON",
                   "STATUS",
                   "RATINGS",
-                  "REGISTER",
                   "ACTIONS",
                 ].map((h) => (
                   <th
@@ -191,7 +214,7 @@ const CancelList = () => {
 
               {filtered.map((e, index) => (
                 <tr
-                  key={e.id}
+                  key={e._id}
                   className={
                     "border-t transition-colors duration-300 " +
                     (isDark
@@ -213,7 +236,7 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-900")
                     }
                   >
-                    {e.name}
+                    {e.studentName}
                   </td>
                   <td
                     className={
@@ -221,8 +244,8 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    <div>{e.contact1}</div>
-                    <div>{e.contact2}</div>
+                    <div>{e.firstMobile}</div>
+                    <div>{e.secondMobile}</div>
                   </td>
                   <td
                     className={
@@ -230,7 +253,7 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.course}
+                    {e.education}
                   </td>
                   <td
                     className={
@@ -238,7 +261,7 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.enquiryDate}
+                    {formatDate(e.leadDate)}
                   </td>
                   <td
                     className={
@@ -246,7 +269,7 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.reminderDate}
+                    {formatDate(e.reminderDate)}
                   </td>
                   <td
                     className={
@@ -262,14 +285,6 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.reason}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
                     {e.status}
                   </td>
                   <td
@@ -278,19 +293,14 @@ const CancelList = () => {
                       (isDark ? "text-gray-200" : "text-gray-800")
                     }
                   >
-                    {e.rating}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.register}
+                    {e.enquiryRating}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-center">
-                      <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white flex items-center gap-1">
+                      <button
+                        onClick={() => handleDeleteClick(e._id)}
+                        className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white flex items-center gap-1"
+                      >
                         <TrashIcon className="h-4 w-4" />
                         Delete
                       </button>
