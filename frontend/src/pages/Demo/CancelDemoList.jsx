@@ -2,6 +2,8 @@ import React, { useState, useMemo } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
+import { useMediaQuery } from "react-responsive";
+import CancelDemoCard from "../../components/CancelDemoCard";
 
 const cancelledDemos = [
   {
@@ -21,8 +23,17 @@ const CancelDemoList = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [search, setSearch] = useState("");
+
+  const handleRestoreClick = (demo) => {
+    console.log("Restore demo:", demo);
+  };
+
+  const handleDeleteClick = (demo) => {
+    console.log("Delete demo:", demo);
+  };
 
   const filteredDemos = useMemo(() => {
     if (!search.trim()) return cancelledDemos;
@@ -45,7 +56,7 @@ const CancelDemoList = () => {
   }, [search]);
 
   return (
-    <div className="flex-1 px-6 py-6">
+    <div className="flex-1 px-4 sm:px-6 py-6">
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
@@ -118,162 +129,180 @@ const CancelDemoList = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead
-              className={
-                "transition-colors duration-300 " +
-                (isDark ? "bg-[#1E2331]" : "bg-gray-100")
-              }
-            >
-              <tr>
-                {[
-                  "NO",
-                  "STUDENT NAME",
-                  "CONTACT",
-                  "COURSE",
-                  "REFERENCE",
-                  "DEMO DATE",
-                  "REASON",
-                  "STATUS",
-                  "ACTIONS",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className={
-                      "px-4 py-3 font-semibold " +
-                      (["STATUS", "ACTIONS"].includes(h)
-                        ? "text-center"
-                        : "text-left") +
-                      " " +
-                      (isDark ? "text-gray-300" : "text-gray-700")
-                    }
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredDemos.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className={
-                    "border-t transition-colors duration-300 " +
-                    (isDark
-                      ? "border-[#2c3250] hover:bg-[#1E2331]"
-                      : "border-gray-200 hover:bg-gray-50")
-                  }
-                >
-                  {/* NO */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-300" : "text-gray-700")
-                    }
-                  >
-                    {index + 1}
-                  </td>
-
-                  {/* STUDENT NAME */}
-                  <td
-                    className={
-                      "px-4 py-3 whitespace-nowrap " +
-                      (isDark ? "text-gray-200" : "text-gray-900")
-                    }
-                  >
-                    {item.name}
-                  </td>
-
-                  {/* CONTACT */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    <div>{item.contact1}</div>
-                    <div>{item.contact2}</div>
-                  </td>
-
-                  {/* COURSE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.course}
-                  </td>
-
-                  {/* REFERENCE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.reference}
-                  </td>
-
-                  {/* DEMO DATE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.demoDate}
-                  </td>
-
-                  {/* REASON */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.reason}
-                  </td>
-
-                  {/* STATUS badge */}
-                  <td className="px-4 py-3 text-center">
-                    <span className="inline-block px-3 py-1 rounded-full border text-xs border-red-500 text-red-500">
-                      {item.status}
-                    </span>
-                  </td>
-                  {/* ACTION buttons */}
-                  <td className="px-4 py-3">
-                    <div className="flex justify-center gap-2">
-                      <button className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white">
-                        Restore
-                      </button>
-                      <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white">
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {filteredDemos.length === 0 && (
+        {isMobile ? (
+          <div>
+            {filteredDemos.map((item) => (
+              <CancelDemoCard
+                key={item.id}
+                demo={item}
+                onRestore={handleRestoreClick}
+                onDelete={handleDeleteClick}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead
+                className={
+                  "transition-colors duration-300 " +
+                  (isDark ? "bg-[#1E2331]" : "bg-gray-100")
+                }
+              >
                 <tr>
-                  <td
-                    colSpan={9}
+                  {[
+                    "NO",
+                    "STUDENT NAME",
+                    "CONTACT",
+                    "COURSE",
+                    "REFERENCE",
+                    "DEMO DATE",
+                    "REASON",
+                    "STATUS",
+                    "ACTIONS",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className={
+                        "px-4 py-3 font-semibold " +
+                        (["STATUS", "ACTIONS"].includes(h)
+                          ? "text-center"
+                          : "text-left") +
+                        " " +
+                        (isDark ? "text-gray-300" : "text-gray-700")
+                      }
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredDemos.map((item, index) => (
+                  <tr
+                    key={item.id}
                     className={
-                      "px-4 py-6 text-center " +
-                      (isDark ? "text-gray-400" : "text-gray-500")
+                      "border-t transition-colors duration-300 " +
+                      (isDark
+                        ? "border-[#2c3250] hover:bg-[#1E2331]"
+                        : "border-gray-200 hover:bg-gray-50")
                     }
                   >
-                    No data available in table
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                    {/* NO */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-300" : "text-gray-700")
+                      }
+                    >
+                      {index + 1}
+                    </td>
+
+                    {/* STUDENT NAME */}
+                    <td
+                      className={
+                        "px-4 py-3 whitespace-nowrap " +
+                        (isDark ? "text-gray-200" : "text-gray-900")
+                      }
+                    >
+                      {item.name}
+                    </td>
+
+                    {/* CONTACT */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      <div>{item.contact1}</div>
+                      <div>{item.contact2}</div>
+                    </td>
+
+                    {/* COURSE */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.course}
+                    </td>
+
+                    {/* REFERENCE */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.reference}
+                    </td>
+
+                    {/* DEMO DATE */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.demoDate}
+                    </td>
+
+                    {/* REASON */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.reason}
+                    </td>
+
+                    {/* STATUS badge */}
+                    <td className="px-4 py-3 text-center">
+                      <span className="inline-block px-3 py-1 rounded-full border text-xs border-red-500 text-red-500">
+                        {item.status}
+                      </span>
+                    </td>
+                    {/* ACTION buttons */}
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => handleRestoreClick(item)}
+                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
+                        >
+                          Restore
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(item)}
+                          className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {filteredDemos.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      className={
+                        "px-4 py-6 text-center " +
+                        (isDark ? "text-gray-400" : "text-gray-500")
+                      }
+                    >
+                      No data available in table
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Bottom info */}
         <div

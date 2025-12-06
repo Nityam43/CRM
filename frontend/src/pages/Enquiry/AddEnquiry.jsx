@@ -111,7 +111,7 @@ const AddEnquiry = () => {
   };
 
   return (
-    <div className="flex-1 flex justify-center px-8 py-8">
+    <div className="flex-1 flex justify-center px-4 sm:px-8 py-8">
       <div className="w-full max-w-6xl px-4">
         <button
           onClick={() => navigate(-1)}
@@ -132,7 +132,7 @@ const AddEnquiry = () => {
 
         <div
           className={
-            "rounded-xl p-6 transition-colors duration-300 " +
+            "rounded-xl p-4 sm:p-6 transition-colors duration-300 " +
             (isDark ? "bg-[#232941]" : "bg-white shadow")
           }
         >

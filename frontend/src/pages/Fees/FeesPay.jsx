@@ -16,7 +16,7 @@ const FeesPay = () => {
   };
 
   return (
-    <div className="flex-1 px-6 py-6">
+    <div className="flex-1 px-4 sm:px-6 py-6">
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
@@ -29,7 +29,7 @@ const FeesPay = () => {
       {/* Card */}
       <div
         className={
-          "max-w-4xl mx-auto rounded-xl p-6 transition-colors duration-300 " +
+          "max-w-4xl mx-auto rounded-xl p-4 sm:p-6 transition-colors duration-300 " +
           (isDark ? "bg-[#232941]" : "bg-white shadow")
         }
       >

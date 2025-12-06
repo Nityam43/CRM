@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChartBarIcon,
   UsersIcon,
@@ -8,7 +8,6 @@ import {
   DocumentPlusIcon,
   ListBulletIcon,
   XCircleIcon,
-  ChevronRightIcon,
   CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -17,7 +16,7 @@ import { useTheme } from "../ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 
-const Sidebar = () => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [enquiryDropdownOpen, setEnquiryDropdownOpen] = useState(false);
@@ -53,7 +52,11 @@ const Sidebar = () => {
 
   const enrollOptions = [
     { label: "Enroll List", path: "/enroll/list", icon: ListBulletIcon },
-    { label: "Cancel Enroll List", path: "/enroll/cancel", icon: XCircleIcon },
+    {
+      label: "Cancel Enroll List",
+      path: "/enroll/cancel",
+      icon: XCircleIcon,
+    },
   ];
 
   const feesOptions = [
@@ -61,18 +64,27 @@ const Sidebar = () => {
     { label: "Fees Pay", path: "/fees/pay" },
   ];
 
+  useEffect(() => {
+    if (isSidebarOpen) {
+      setIsExpanded(true);
+    } else {
+      setIsExpanded(false);
+    }
+  }, [isSidebarOpen]);
+
   return (
     <aside
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-      className={
-        `flex flex-col p-4 h-screen sticky top-0 overflow-y-auto overflow-x-hidden 
-     transition-[width] duration-300 ease-in-out
-     ${isExpanded ? "w-64" : "w-20"}` +
-        (isDark
-          ? " bg-[#151824] text-gray-200"
-          : " bg-white text-gray-900 border-r border-gray-200")
-      }
+      onMouseEnter={() => window.innerWidth > 768 && setIsExpanded(true)}
+      onMouseLeave={() => window.innerWidth > 768 && !isSidebarOpen && setIsExpanded(false)}
+      className={`
+        fixed md:relative inset-y-0 left-0 z-30
+        flex flex-col p-4 h-screen overflow-y-auto
+        w-64 transition-transform duration-300 ease-in-out
+        ${isDark ? "bg-[#151824] text-gray-200" : "bg-white text-gray-900 border-r border-gray-200"}
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0
+        ${isExpanded ? 'md:w-64' : 'md:w-20'}
+      `}
     >
       {/* Logo / title */}
       <div className="flex justify-center mb-8 h-10">
@@ -110,7 +122,7 @@ const Sidebar = () => {
           />
           <span
             className={
-              "ml-4 whitespace-nowrap transition-opacity duration-300 hidden lg:block " +
+              "ml-4 whitespace-nowrap transition-opacity duration-300 " +
               (isExpanded ? "opacity-100" : "opacity-0")
             }
           >
@@ -147,7 +159,7 @@ const Sidebar = () => {
             <span
               className={
                 "ml-4 whitespace-nowrap transition-opacity duration-300 " +
-                (isExpanded ? "opacity-100" : "opacity-0 hidden")
+                (isExpanded ? "opacity-100" : "opacity-0")
               }
             >
               Enquiry
@@ -191,6 +203,7 @@ const Sidebar = () => {
                     onClick={() => {
                       navigate(option.path);
                       setEnquiryDropdownOpen(false);
+                      setIsSidebarOpen(false);
                     }}
                     className={
                       "w-full flex items-center px-3 py-2 rounded transition text-sm " +
@@ -229,7 +242,7 @@ const Sidebar = () => {
             <span
               className={
                 "ml-4 whitespace-nowrap transition-opacity duration-300 " +
-                (isExpanded ? "opacity-100" : "opacity-0 hidden")
+                (isExpanded ? "opacity-100" : "opacity-0")
               }
             >
               Demo
@@ -273,6 +286,7 @@ const Sidebar = () => {
                     onClick={() => {
                       navigate(option.path);
                       setDemoDropdownOpen(false);
+                      setIsSidebarOpen(false);
                     }}
                     className={
                       "w-full flex items-center px-3 py-2 rounded transition text-sm " +
@@ -311,7 +325,7 @@ const Sidebar = () => {
             <span
               className={
                 "ml-4 whitespace-nowrap transition-opacity duration-300 " +
-                (isExpanded ? "opacity-100" : "opacity-0 hidden")
+                (isExpanded ? "opacity-100" : "opacity-0")
               }
             >
               Enroll
@@ -355,6 +369,7 @@ const Sidebar = () => {
                     onClick={() => {
                       navigate(option.path);
                       setEnrollDropdownOpen(false);
+                      setIsSidebarOpen(false);
                     }}
                     className={
                       "w-full flex items-center px-3 py-2 rounded transition text-sm " +
@@ -393,7 +408,7 @@ const Sidebar = () => {
             <span
               className={
                 "ml-4 whitespace-nowrap transition-opacity duration-300 " +
-                (isExpanded ? "opacity-100" : "opacity-0 hidden")
+                (isExpanded ? "opacity-100" : "opacity-0")
               }
             >
               Fees
@@ -434,6 +449,7 @@ const Sidebar = () => {
                   onClick={() => {
                     navigate(option.path);
                     setFeesDropdownOpen(false);
+                    setIsSidebarOpen(false);
                   }}
                   className={
                     "w-full flex items-center px-3 py-2 rounded transition text-sm " +
@@ -540,7 +556,7 @@ const Sidebar = () => {
         <ArrowLeftOnRectangleIcon className="h-6 w-6 shrink-0" />
         <span
           className={
-            "ml-4 whitespace-nowrap transition-opacity duration-300 hidden lg:block " +
+            "ml-4 whitespace-nowrap transition-opacity duration-300 " +
             (isExpanded ? "opacity-100" : "opacity-0")
           }
         >

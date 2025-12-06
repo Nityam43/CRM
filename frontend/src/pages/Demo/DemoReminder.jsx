@@ -5,6 +5,8 @@ import { useTheme } from "../../ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { useMediaQuery } from "react-responsive";
+import DemoReminderCard from "../../components/DemoReminderCard";
 
 const demoReminders = [
   // sample row – you can replace with API data
@@ -24,8 +26,21 @@ const DemoReminder = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [search, setSearch] = useState("");
+
+  const handleEditClick = (reminder) => {
+    console.log("Edit reminder:", reminder);
+  };
+
+  const handleDoneClick = (reminder) => {
+    console.log("Mark as done:", reminder);
+  };
+
+  const handleCancelClick = (reminder) => {
+    console.log("Cancel reminder:", reminder);
+  };
 
   const filtered = useMemo(() => {
     if (!search.trim()) return demoReminders;
@@ -47,7 +62,7 @@ const DemoReminder = () => {
   }, [search]);
 
   return (
-    <div className="flex-1 px-6 py-6">
+    <div className="flex-1 px-4 sm:px-6 py-6">
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
@@ -120,192 +135,225 @@ const DemoReminder = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead
-              className={
-                "transition-colors duration-300 " +
-                (isDark ? "bg-[#1E2331]" : "bg-gray-100")
-              }
-            >
-              <tr>
-                {[
-                  "NO",
-                  "STUDENT NAME",
-                  "CONTACT",
-                  "COURSE",
-                  "REFERENCE",
-                  "DEMO DATE",
-                  "MESSAGE",
-                  "STATUS",
-                  "ACTIONS",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className={
-                      "px-4 py-3 font-semibold " +
-                      (["MESSAGE", "STATUS", "ACTIONS"].includes(h)
-                        ? "text-center"
-                        : "text-left") +
-                      " " +
-                      (isDark ? "text-gray-300" : "text-gray-700")
-                    }
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {filtered.map((item, index) => (
-                <tr
+        {isMobile ? (
+          <div>
+            {filtered.length === 0 ? (
+              <p
+                className={
+                  "text-center py-4 " +
+                  (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                No data available
+              </p>
+            ) : (
+              filtered.map((item) => (
+                <DemoReminderCard
                   key={item.id}
-                  className={
-                    "border-t transition-colors duration-300 " +
-                    (isDark
-                      ? "border-[#2c3250] hover:bg-[#1E2331]"
-                      : "border-gray-200 hover:bg-gray-50")
-                  }
-                >
-                  {/* NO */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-300" : "text-gray-700")
-                    }
-                  >
-                    {index + 1}
-                  </td>
-
-                  {/* STUDENT NAME */}
-                  <td
-                    className={
-                      "px-4 py-3 whitespace-nowrap " +
-                      (isDark ? "text-gray-200" : "text-gray-900")
-                    }
-                  >
-                    {item.name}
-                  </td>
-
-                  {/* CONTACT */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    <div>{item.contact1}</div>
-                    <div>{item.contact2}</div>
-                  </td>
-
-                  {/* COURSE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.course}
-                  </td>
-
-                  {/* REFERENCE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.reference}
-                  </td>
-
-                  {/* DEMO DATE */}
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {item.demoDate}
-                  </td>
-
-                  {/* MESSAGE icons */}
-                  <td className="px-4 py-3 text-center">
-                    <div
-                      className={
-                        "flex justify-center gap-3 text-lg transition-colors duration-300 " +
-                        (isDark ? "text-gray-300" : "text-gray-600")
-                      }
-                    >
-                      <button
-                        className="hover:text-green-500 transition-colors"
-                        title="WhatsApp"
-                      >
-                        <FontAwesomeIcon icon={faWhatsapp} />
-                      </button>
-                      <button
-                        className="hover:text-sky-500 transition-colors"
-                        title="Message"
-                      >
-                        <FontAwesomeIcon icon={faCommentDots} />
-                      </button>
-                      <button
-                        className="hover:text-blue-500 transition-colors"
-                        title="Call"
-                      >
-                        <FontAwesomeIcon icon={faPhone} />
-                      </button>
-                    </div>
-                  </td>
-
-                  {/* STATUS */}
-                  <td className="px-4 py-3 text-center">
-                    <span
-                      className={
-                        "inline-block px-3 py-1 rounded-full border text-xs " +
-                        (item.status === "Done"
-                          ? "border-green-500 text-green-500"
-                          : "border-yellow-500 text-yellow-500")
-                      }
-                    >
-                      {item.status}
-                    </span>
-                  </td>
-
-                  {/* ACTIONS (Edit / Done / Cancel) */}
-                  <td className="px-4 py-3">
-                    <div className="flex justify-center gap-2">
-                      <button className="text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white">
-                        Edit
-                      </button>
-                      <button className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white">
-                        Done
-                      </button>
-                      <button className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white">
-                        Cancel
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {filtered.length === 0 && (
+                  reminder={item}
+                  onEdit={handleEditClick}
+                  onDone={handleDoneClick}
+                  onCancel={handleCancelClick}
+                />
+              ))
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead
+                className={
+                  "transition-colors duration-300 " +
+                  (isDark ? "bg-[#1E2331]" : "bg-gray-100")
+                }
+              >
                 <tr>
-                  <td
-                    colSpan={9}
+                  {[
+                    "NO",
+                    "STUDENT NAME",
+                    "CONTACT",
+                    "COURSE",
+                    "REFERENCE",
+                    "DEMO DATE",
+                    "MESSAGE",
+                    "STATUS",
+                    "ACTIONS",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className={
+                        "px-4 py-3 font-semibold " +
+                        (["MESSAGE", "STATUS", "ACTIONS"].includes(h)
+                          ? "text-center"
+                          : "text-left") +
+                        " " +
+                        (isDark ? "text-gray-300" : "text-gray-700")
+                      }
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {filtered.map((item, index) => (
+                  <tr
+                    key={item.id}
                     className={
-                      "px-4 py-6 text-center " +
-                      (isDark ? "text-gray-400" : "text-gray-500")
+                      "border-t transition-colors duration-300 " +
+                      (isDark
+                        ? "border-[#2c3250] hover:bg-[#1E2331]"
+                        : "border-gray-200 hover:bg-gray-50")
                     }
                   >
-                    No data available in table
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                    {/* NO */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-300" : "text-gray-700")
+                      }
+                    >
+                      {index + 1}
+                    </td>
+
+                    {/* STUDENT NAME */}
+                    <td
+                      className={
+                        "px-4 py-3 whitespace-nowrap " +
+                        (isDark ? "text-gray-200" : "text-gray-900")
+                      }
+                    >
+                      {item.name}
+                    </td>
+
+                    {/* CONTACT */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      <div>{item.contact1}</div>
+                      <div>{item.contact2}</div>
+                    </td>
+
+                    {/* COURSE */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.course}
+                    </td>
+
+                    {/* REFERENCE */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.reference}
+                    </td>
+
+                    {/* DEMO DATE */}
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {item.demoDate}
+                    </td>
+
+                    {/* MESSAGE icons */}
+                    <td className="px-4 py-3 text-center">
+                      <div
+                        className={
+                          "flex justify-center gap-3 text-lg transition-colors duration-300 " +
+                          (isDark ? "text-gray-300" : "text-gray-600")
+                        }
+                      >
+                        <button
+                          className="hover:text-green-500 transition-colors"
+                          title="WhatsApp"
+                        >
+                          <FontAwesomeIcon icon={faWhatsapp} />
+                        </button>
+                        <button
+                          className="hover:text-sky-500 transition-colors"
+                          title="Message"
+                        >
+                          <FontAwesomeIcon icon={faCommentDots} />
+                        </button>
+                        <button
+                          className="hover:text-blue-500 transition-colors"
+                          title="Call"
+                        >
+                          <FontAwesomeIcon icon={faPhone} />
+                        </button>
+                      </div>
+                    </td>
+
+                    {/* STATUS */}
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className={
+                          "inline-block px-3 py-1 rounded-full border text-xs " +
+                          (item.status === "Done"
+                            ? "border-green-500 text-green-500"
+                            : "border-yellow-500 text-yellow-500")
+                        }
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+
+                    {/* ACTIONS (Edit / Done / Cancel) */}
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => handleEditClick(item)}
+                          className="text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDoneClick(item)}
+                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
+                        >
+                          Done
+                        </button>
+                        <button
+                          onClick={() => handleCancelClick(item)}
+                          className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      className={
+                        "px-4 py-6 text-center " +
+                        (isDark ? "text-gray-400" : "text-gray-500")
+                      }
+                    >
+                      No data available in table
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Bottom info */}
         <div

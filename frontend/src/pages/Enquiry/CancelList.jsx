@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import { useTheme } from "../../ThemeContext";
 import api from "../../api/axios";
+import { useMediaQuery } from "react-responsive";
+import CancelCard from "../../components/CancelCard";
 
 const CancelList = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [cancelledEnquiries, setCancelledEnquiries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,7 +91,7 @@ const CancelList = () => {
   }
 
   return (
-    <div className="flex-1 px-6 py-6">
+    <div className="flex-1 px-4 sm:px-6 py-6">
       {/* top bar */}
       <button
         onClick={() => navigate(-1)}
@@ -160,157 +163,164 @@ const CancelList = () => {
           </div>
         </div>
 
-        {/* table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead
-              className={
-                "transition-colors duration-300 " +
-                (isDark ? "bg-[#1E2331]" : "bg-gray-100")
-              }
-            >
-              <tr>
-                {[
-                  "NO",
-                  "STUDENT NAME",
-                  "CONTACT",
-                  "COURSES",
-                  "ENQUIRY DATE",
-                  "REMINDER DATE",
-                  "REFERENCES",
-                  "STATUS",
-                  "RATINGS",
-                  "ACTIONS",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className={
-                      "px-4 py-3 font-semibold " +
-                      (h === "ACTIONS" ? "text-center" : "text-left") +
-                      " " +
-                      (isDark ? "text-gray-300" : "text-gray-700")
-                    }
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {filtered.length === 0 && (
+        {isMobile ? (
+          <div>
+            {filtered.map((e) => (
+              <CancelCard key={e._id} enquiry={e} onDelete={handleDeleteClick} />
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead
+                className={
+                  "transition-colors duration-300 " +
+                  (isDark ? "bg-[#1E2331]" : "bg-gray-100")
+                }
+              >
                 <tr>
-                  <td
-                    colSpan={12}
-                    className={
-                      "px-4 py-6 text-center " +
-                      (isDark ? "text-gray-400" : "text-gray-500")
-                    }
-                  >
-                    No data available in table
-                  </td>
+                  {[
+                    "NO",
+                    "STUDENT NAME",
+                    "CONTACT",
+                    "COURSES",
+                    "ENQUIRY DATE",
+                    "REMINDER DATE",
+                    "REFERENCES",
+                    "STATUS",
+                    "RATINGS",
+                    "ACTIONS",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className={
+                        "px-4 py-3 font-semibold " +
+                        (h === "ACTIONS" ? "text-center" : "text-left") +
+                        " " +
+                        (isDark ? "text-gray-300" : "text-gray-700")
+                      }
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              )}
+              </thead>
 
-              {filtered.map((e, index) => (
-                <tr
-                  key={e._id}
-                  className={
-                    "border-t transition-colors duration-300 " +
-                    (isDark
-                      ? "border-[#2c3250] hover:bg-[#1E2331]"
-                      : "border-gray-200 hover:bg-gray-50")
-                  }
-                >
-                  <td
+              <tbody>
+                {filtered.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={12}
+                      className={
+                        "px-4 py-6 text-center " +
+                        (isDark ? "text-gray-400" : "text-gray-500")
+                      }
+                    >
+                      No data available in table
+                    </td>
+                  </tr>
+                )}
+
+                {filtered.map((e, index) => (
+                  <tr
+                    key={e._id}
                     className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-300" : "text-gray-700")
+                      "border-t transition-colors duration-300 " +
+                      (isDark
+                        ? "border-[#2c3250] hover:bg-[#1E2331]"
+                        : "border-gray-200 hover:bg-gray-50")
                     }
                   >
-                    {index + 1}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 whitespace-nowrap " +
-                      (isDark ? "text-gray-200" : "text-gray-900")
-                    }
-                  >
-                    {e.studentName}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    <div>{e.firstMobile}</div>
-                    <div>{e.secondMobile}</div>
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.education}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {formatDate(e.leadDate)}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {formatDate(e.reminderDate)}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.reference}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.status}
-                  </td>
-                  <td
-                    className={
-                      "px-4 py-3 " +
-                      (isDark ? "text-gray-200" : "text-gray-800")
-                    }
-                  >
-                    {e.enquiryRating}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-center">
-                      <button
-                        onClick={() => handleDeleteClick(e._id)}
-                        className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white flex items-center gap-1"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-300" : "text-gray-700")
+                      }
+                    >
+                      {index + 1}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 whitespace-nowrap " +
+                        (isDark ? "text-gray-200" : "text-gray-900")
+                      }
+                    >
+                      {e.studentName}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      <div>{e.firstMobile}</div>
+                      <div>{e.secondMobile}</div>
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {e.education}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {formatDate(e.leadDate)}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {formatDate(e.reminderDate)}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {e.reference}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {e.status}
+                    </td>
+                    <td
+                      className={
+                        "px-4 py-3 " +
+                        (isDark ? "text-gray-200" : "text-gray-800")
+                      }
+                    >
+                      {e.enquiryRating}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center">
+                        <button
+                          onClick={() => handleDeleteClick(e._id)}
+                          className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white flex items-center gap-1"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* bottom info + pagination placeholder */}
         <div

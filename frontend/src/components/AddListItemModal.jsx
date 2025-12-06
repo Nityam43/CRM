@@ -17,9 +17,10 @@ const AddListItemModal = ({ isOpen, onClose, itemType, onAddItem }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className={
-          "p-6 rounded-lg shadow-lg w-full max-w-md " +
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div
+        className={
+          "p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md " +
           (isDark ? "bg-[#232941] text-white" : "bg-white text-gray-900")
         }
       >

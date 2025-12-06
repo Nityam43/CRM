@@ -10,13 +10,12 @@ const Dashboard = () => {
   const isDark = theme === "dark";
 
   return (
-    <div>
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Page title */}
       <h2
         className={
-          isDark
-            ? "text-2xl font-bold text-white mb-4"
-            : "text-2xl font-bold text-gray-900 mb-4"
+          "text-2xl font-bold mb-4 " +
+          (isDark ? "text-white" : "text-gray-900")
         }
       >
         Admin Dashboard
@@ -39,16 +38,15 @@ const Dashboard = () => {
           <div>
             <p
               className={
-                isDark
-                  ? "text-lg font-semibold text-white"
-                  : "text-lg font-semibold text-gray-900"
+                "text-lg font-semibold " +
+                (isDark ? "text-white" : "text-gray-900")
               }
             >
               153
             </p>
             <p
               className={
-                isDark ? "text-xs text-gray-400" : "text-xs text-gray-500"
+                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
               }
             >
               Analytics
@@ -71,16 +69,15 @@ const Dashboard = () => {
           <div>
             <p
               className={
-                isDark
-                  ? "text-lg font-semibold text-white"
-                  : "text-lg font-semibold text-gray-900"
+                "text-lg font-semibold " +
+                (isDark ? "text-white" : "text-gray-900")
               }
             >
               36
             </p>
             <p
               className={
-                isDark ? "text-xs text-gray-400" : "text-xs text-gray-500"
+                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
               }
             >
               Users
@@ -103,16 +100,15 @@ const Dashboard = () => {
           <div>
             <p
               className={
-                isDark
-                  ? "text-lg font-semibold text-white"
-                  : "text-lg font-semibold text-gray-900"
+                "text-lg font-semibold " +
+                (isDark ? "text-white" : "text-gray-900")
               }
             >
               74
             </p>
             <p
               className={
-                isDark ? "text-xs text-gray-400" : "text-xs text-gray-500"
+                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
               }
             >
               Tasks
