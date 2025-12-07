@@ -7,6 +7,12 @@ const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
   return (
     <div
       className={
@@ -15,7 +21,7 @@ const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
       }
     >
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-bold">{demo.name}</h3>
+        <h3 className="text-lg font-bold">{demo.studentName}</h3>
         <span
           className={
             "inline-block px-2 py-0.5 rounded-full text-xs " +
@@ -36,8 +42,8 @@ const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
           >
             Contact:
           </span>{" "}
-          {demo.contact1}
-          {demo.contact2 && `, ${demo.contact2}`}
+          {demo.firstMobile}
+          {demo.secondMobile && `, ${demo.secondMobile}`}
         </p>
         <p>
           <span
@@ -67,7 +73,7 @@ const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
           >
             Date:
           </span>{" "}
-          {demo.date}
+          {formatDate(demo.leadDate)}
         </p>
         <p>
           <span
@@ -83,14 +89,14 @@ const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
       <div className="flex justify-between items-center mt-4">
         <div className="flex gap-4 text-xl">
           <a
-            href={`https://wa.me/${demo.contact1}`}
+            href={`https://wa.me/${demo.firstMobile}`}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-green-500"
           >
             <FontAwesomeIcon icon={faWhatsapp} />
           </a>
-          <a href={`tel:${demo.contact1}`} className="hover:text-blue-500">
+          <a href={`tel:${demo.firstMobile}`} className="hover:text-blue-500">
             <FontAwesomeIcon icon={faPhone} />
           </a>
         </div>

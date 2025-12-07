@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
@@ -7,31 +7,7 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useMediaQuery } from "react-responsive";
 import DemoCard from "../../components/DemoCard";
-
-const demos = [
-  {
-    id: 1,
-    name: "Borad Ayushi Ghanshyambhai",
-    contact1: "9723540080",
-    contact2: "8140180172",
-    course: "Digital Marketing - 3M",
-    reference: "Happy Bhanderi - SS - REF",
-    date: "12/08/2025 06:54 AM",
-    time: "3 PM",
-    status: "Enrolled",
-  },
-  {
-    id: 2,
-    name: "Borad Payal Ghanshyambhai",
-    contact1: "7016529543",
-    contact2: "8140180172",
-    course: "Digital Marketing - 3M",
-    reference: "Happy Bhanderi - SS - REF",
-    date: "12/08/2025 06:54 AM",
-    time: "2 PM",
-    status: "Enrolled",
-  },
-];
+import api from "../../api/axios";
 
 const DemoList = () => {
   const navigate = useNavigate();
@@ -39,7 +15,25 @@ const DemoList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
+  const [demos, setDemos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchDemos = async () => {
+      try {
+        const response = await api.get("/demo");
+        setDemos(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDemos();
+  }, []);
 
   const handleEditClick = (demo) => {
     console.log("Edit demo:", demo);
@@ -58,20 +52,41 @@ const DemoList = () => {
     const q = search.toLowerCase();
     return demos.filter((d) =>
       [
-        d.name,
-        d.contact1,
-        d.contact2,
-        d.course,
+        d.studentName,
+        d.firstMobile,
+        d.secondMobile,
+        d.education,
         d.reference,
-        d.date,
-        d.time,
+        d.leadDate,
         d.status,
       ]
         .join(" ")
         .toLowerCase()
         .includes(q)
     );
-  }, [search]);
+  }, [search, demos]);
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -151,7 +166,7 @@ const DemoList = () => {
           <div>
             {filteredDemos.map((item) => (
               <DemoCard
-                key={item.id}
+                key={item._id}
                 demo={item}
                 onEdit={handleEditClick}
                 onEnroll={handleEnrollClick}
@@ -201,7 +216,7 @@ const DemoList = () => {
               <tbody>
                 {filteredDemos.map((item, index) => (
                   <tr
-                    key={item.id}
+                    key={item._id}
                     className={
                       "border-t transition-colors duration-300 " +
                       (isDark
@@ -226,7 +241,7 @@ const DemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-900")
                       }
                     >
-                      {item.name}
+                      {item.studentName}
                     </td>
 
                     {/* CONTACT */}
@@ -236,8 +251,8 @@ const DemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      <div>{item.contact1}</div>
-                      <div>{item.contact2}</div>
+                      <div>{item.firstMobile}</div>
+                      <div>{item.secondMobile}</div>
                     </td>
 
                     {/* COURSE */}
@@ -267,7 +282,7 @@ const DemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.date}
+                      {formatDate(item.leadDate)}
                     </td>
 
                     {/* TIME */}

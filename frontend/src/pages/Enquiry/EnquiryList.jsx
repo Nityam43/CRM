@@ -39,9 +39,19 @@ const EnquiryList = () => {
     navigate(`/enquiry/edit/${enquiry._id}`);
   };
 
-  const handleDemoClick = (enquiry) => {
-    // Implement demo logic here
-    console.log("Demo for:", enquiry);
+  const handleDemoClick = async (enquiry) => {
+    try {
+      await api.post("/demo", {
+        ...enquiry,
+        status: "Demo",
+      });
+      setEnquiries((prev) => prev.filter((e) => e._id !== enquiry._id));
+      navigate("/demo/list");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || err.message || "Failed to move to demo"
+      );
+    }
   };
 
   const handleCancelClick = async (enquiry) => {
