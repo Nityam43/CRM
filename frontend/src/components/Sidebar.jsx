@@ -16,14 +16,18 @@ import { useTheme } from "../ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 
-const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Sidebar = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+  isExpanded,
+  setIsExpanded,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [enquiryDropdownOpen, setEnquiryDropdownOpen] = useState(false);
   const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
   const [enrollDropdownOpen, setEnrollDropdownOpen] = useState(false);
   const [feesDropdownOpen, setFeesDropdownOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -64,22 +68,16 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     { label: "Fees Pay", path: "/fees/pay" },
   ];
 
-  useEffect(() => {
-    if (isSidebarOpen) {
-      setIsExpanded(true);
-    } else {
-      setIsExpanded(false);
-    }
-  }, [isSidebarOpen]);
+
 
   return (
     <aside
       onMouseEnter={() => window.innerWidth > 768 && setIsExpanded(true)}
       onMouseLeave={() => window.innerWidth > 768 && !isSidebarOpen && setIsExpanded(false)}
       className={`
-        fixed md:relative inset-y-0 left-0 z-30
-        flex flex-col p-4 h-screen overflow-y-auto
-        w-64 transition-transform duration-300 ease-in-out
+        fixed md:fixed left-0 z-30 h-full
+        flex flex-col p-4 overflow-y-auto overflow-x-hidden
+        w-64 transition-all duration-300 ease-in-out
         ${isDark ? "bg-[#151824] text-gray-200" : "bg-white text-gray-900 border-r border-gray-200"}
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0
