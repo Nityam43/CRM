@@ -8,7 +8,7 @@ const listItemSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ["Reference", "Area", "Hobbies", "Interest", "Counsellor"],
+        enum: ["Reference", "Area", "Hobbies", "Interest", "Counsellor", "Course"],
     },
 }, { timestamps: true });
 
