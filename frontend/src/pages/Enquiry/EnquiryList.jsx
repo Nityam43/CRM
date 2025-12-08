@@ -40,14 +40,17 @@ const EnquiryList = () => {
   };
 
   const handleDemoClick = async (enquiry) => {
+    console.log("Moving enquiry to demo:", enquiry);
     try {
       await api.post("/demo", {
         ...enquiry,
+        course: enquiry.education, // Map education to course
         status: "Demo",
       });
       setEnquiries((prev) => prev.filter((e) => e._id !== enquiry._id));
       navigate("/demo/list");
     } catch (err) {
+      console.error("Failed to move to demo:", err);
       setError(
         err.response?.data?.message || err.message || "Failed to move to demo"
       );

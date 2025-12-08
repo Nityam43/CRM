@@ -23,6 +23,6 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 app.use("/enquiry", enquiryRoutes);
 app.use("/listItem", listItemRoutes);
-app.use("/", demoRoutes);
+app.use("/demo", demoRoutes);
 
 module.exports = app;

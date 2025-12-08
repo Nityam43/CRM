@@ -36,21 +36,51 @@ const DemoList = () => {
   }, []);
 
   const handleEditClick = (demo) => {
-    console.log("Edit demo:", demo);
+    navigate(`/demo/edit/${demo._id}`);
   };
 
-  const handleEnrollClick = (demo) => {
-    console.log("Enroll demo:", demo);
+  const handleEnrollClick = async (demo) => {
+    if (!window.confirm("Are you sure you want to enroll this demo?")) return;
+    try {
+      const response = await api.put(`/demo/${demo._id}`, { ...demo, status: "Enrolled" });
+      setDemos((prevDemos) =>
+        prevDemos.map((d) => (d._id === demo._id ? response.data : d))
+      );
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const handleCancelClick = (demo) => {
-    console.log("Cancel demo:", demo);
+  const handleCancelClick = async (demoId) => {
+    if (!window.confirm("Are you sure you want to cancel this demo?")) return;
+    try {
+      const response = await api.patch(`/demo/cancel/${demoId}`);
+      setDemos((prevDemos) =>
+        prevDemos.map((d) => (d._id === demoId ? response.data : d))
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteClick = async (demoId) => {
+    if (!window.confirm("Are you sure you want to delete this demo?")) return;
+    try {
+      await api.delete(`/demo/${demoId}`);
+      setDemos((prevDemos) => prevDemos.filter((d) => d._id !== demoId));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const filteredDemos = useMemo(() => {
-    if (!search.trim()) return demos;
+    const activeDemos = demos.filter(
+      (d) => d.status !== "Cancelled"
+    );
+
+    if (!search.trim()) return activeDemos;
     const q = search.toLowerCase();
-    return demos.filter((d) =>
+    return activeDemos.filter((d) =>
       [
         d.studentName,
         d.firstMobile,
@@ -100,14 +130,16 @@ const DemoList = () => {
       </button>
 
       {/* Title */}
-      <h2
-        className={
-          "text-2xl font-bold mb-4 transition-colors duration-300 " +
-          (isDark ? "text-white" : "text-gray-900")
-        }
-      >
-        Demo List
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2
+          className={
+            "text-2xl font-bold transition-colors duration-300 " +
+            (isDark ? "text-white" : "text-gray-900")
+          }
+        >
+          Demo List
+        </h2>
+      </div>
 
       {/* Main card */}
       <div
@@ -171,6 +203,7 @@ const DemoList = () => {
                 onEdit={handleEditClick}
                 onEnroll={handleEnrollClick}
                 onCancel={handleCancelClick}
+                onDelete={handleDeleteClick}
               />
             ))}
           </div>
@@ -348,10 +381,16 @@ const DemoList = () => {
                           Enroll
                         </button>
                         <button
-                          onClick={() => handleCancelClick(item)}
+                          onClick={() => handleCancelClick(item._id)}
                           className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
                         >
                           Cancel
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(item._id)}
+                          className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>

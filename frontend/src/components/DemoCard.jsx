@@ -1,9 +1,9 @@
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faPhone, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from "../ThemeContext";
 
-const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
+const DemoCard = ({ demo, onEdit, onEnroll, onCancel, onDelete }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -114,10 +114,16 @@ const DemoCard = ({ demo, onEdit, onEnroll, onCancel }) => {
             Enroll
           </button>
           <button
-            onClick={() => onCancel(demo)}
+            onClick={() => onCancel(demo._id)}
             className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
           >
             Cancel
+          </button>
+          <button
+            onClick={() => onDelete(demo._id)}
+            className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
+          >
+            <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
       </div>

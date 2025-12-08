@@ -1,11 +1,110 @@
-const demos = [];
+const Demo = require('../models/demo.model.js');
 
-exports.addDemo = (req, res) => {
-    const newDemo = req.body;
-    demos.push(newDemo);
-    res.status(201).json(newDemo);
+// Create a new demo
+const createDemo = async (req, res) => {
+    console.log("Attempting to create demo with data:", req.body);
+    try {
+        const demo = new Demo(req.body);
+        await demo.save();
+        res.status(201).json({
+            message: 'Demo created successfully',
+            data: demo,
+        });
+    } catch (error) {
+        console.error("Error creating demo:", error);
+        res.status(400).json({
+            message: 'Error creating demo',
+            error: error.message,
+        });
+    }
 };
 
-exports.getDemos = (req, res) => {
-    res.status(200).json(demos);
+// Get all demos
+const getDemos = async (req, res) => {
+    try {
+        const demos = await Demo.find();
+        res.status(200).json(demos);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching demos',
+            error: error.message,
+        });
+    }
+};
+
+// Get a single demo by ID
+const getDemoById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const demo = await Demo.findById(id);
+        if (!demo) {
+            return res.status(404).json({ message: 'Demo not found' });
+        }
+        res.status(200).json(demo);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error fetching demo',
+            error: error.message,
+        });
+    }
+};
+
+// Update a demo by ID
+const updateDemo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedDemo = await Demo.findByIdAndUpdate(id, req.body, { new: true });
+        if (!updatedDemo) {
+            return res.status(404).json({ message: 'Demo not found' });
+        }
+        res.status(200).json(updatedDemo);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error updating demo',
+            error: error.message,
+        });
+    }
+};
+
+// Delete a demo by ID
+const deleteDemo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedDemo = await Demo.findByIdAndDelete(id);
+        if (!deletedDemo) {
+            return res.status(404).json({ message: 'Demo not found' });
+        }
+        res.status(200).json({ message: 'Demo deleted successfully' });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error deleting demo',
+            error: error.message,
+        });
+    }
+};
+
+// Cancel a demo by ID
+const cancelDemo = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const canceledDemo = await Demo.findByIdAndUpdate(id, { status: 'canceled' }, { new: true });
+        if (!canceledDemo) {
+            return res.status(404).json({ message: 'Demo not found' });
+        }
+        res.status(200).json(canceledDemo);
+    } catch (error) {
+        res.status(500).json({
+            message: 'Error canceling demo',
+            error: error.message,
+        });
+    }
+};
+
+module.exports = {
+    createDemo,
+    getDemos,
+    getDemoById,
+    updateDemo,
+    deleteDemo,
+    cancelDemo,
 };
