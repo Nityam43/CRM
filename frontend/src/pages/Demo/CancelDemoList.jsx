@@ -1,23 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import CancelDemoCard from "../../components/CancelDemoCard";
-
-const cancelledDemos = [
-  {
-    id: 1,
-    name: "Student Name",
-    contact1: "9876543210",
-    contact2: "9876543211",
-    course: "Digital Marketing - 3M",
-    reference: "Social Media",
-    demoDate: "12/08/2025 06:54 AM",
-    reason: "Not interested",
-    status: "Cancelled",
-  },
-];
+import api from "../../api/axios";
 
 const CancelDemoList = () => {
   const navigate = useNavigate();
@@ -25,35 +12,88 @@ const CancelDemoList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
+  const [demos, setDemos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  const handleRestoreClick = (demo) => {
-    console.log("Restore demo:", demo);
+  useEffect(() => {
+    const fetchDemos = async () => {
+      try {
+        const response = await api.get("/demo");
+        setDemos(response.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDemos();
+  }, []);
+
+  const handleRestoreClick = async (demo) => {
+    if (!window.confirm("Are you sure you want to restore this demo?")) return;
+    try {
+      await api.put(`/demo/${demo._id}`, { ...demo, status: "Demo" });
+      setDemos((prevDemos) => prevDemos.filter((d) => d._id !== demo._id));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
-  const handleDeleteClick = (demo) => {
-    console.log("Delete demo:", demo);
+  const handleDeleteClick = async (demoId) => {
+    if (!window.confirm("Are you sure you want to delete this demo permanently?"))
+      return;
+    try {
+      await api.delete(`/demo/${demoId}`);
+      setDemos((prevDemos) => prevDemos.filter((d) => d._id !== demoId));
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const filteredDemos = useMemo(() => {
+    const cancelledDemos = demos.filter((d) => d.status === "Cancelled");
     if (!search.trim()) return cancelledDemos;
     const q = search.toLowerCase();
     return cancelledDemos.filter((d) =>
       [
-        d.name,
-        d.contact1,
-        d.contact2,
+        d.studentName,
+        d.firstMobile,
+        d.secondMobile,
         d.course,
         d.reference,
-        d.demoDate,
-        d.reason,
+        d.leadDate,
         d.status,
       ]
         .join(" ")
         .toLowerCase()
         .includes(q)
     );
-  }, [search]);
+  }, [search, demos]);
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -133,7 +173,7 @@ const CancelDemoList = () => {
           <div>
             {filteredDemos.map((item) => (
               <CancelDemoCard
-                key={item.id}
+                key={item._id}
                 demo={item}
                 onRestore={handleRestoreClick}
                 onDelete={handleDeleteClick}
@@ -181,7 +221,7 @@ const CancelDemoList = () => {
               <tbody>
                 {filteredDemos.map((item, index) => (
                   <tr
-                    key={item.id}
+                    key={item._id}
                     className={
                       "border-t transition-colors duration-300 " +
                       (isDark
@@ -206,7 +246,7 @@ const CancelDemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-900")
                       }
                     >
-                      {item.name}
+                      {item.studentName}
                     </td>
 
                     {/* CONTACT */}
@@ -216,8 +256,8 @@ const CancelDemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      <div>{item.contact1}</div>
-                      <div>{item.contact2}</div>
+                      <div>{item.firstMobile}</div>
+                      <div>{item.secondMobile}</div>
                     </td>
 
                     {/* COURSE */}
@@ -247,7 +287,7 @@ const CancelDemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.demoDate}
+                      {formatDate(item.leadDate)}
                     </td>
 
                     {/* REASON */}
@@ -257,7 +297,7 @@ const CancelDemoList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.reason}
+                      {item.note}
                     </td>
 
                     {/* STATUS badge */}
@@ -276,7 +316,7 @@ const CancelDemoList = () => {
                           Restore
                         </button>
                         <button
-                          onClick={() => handleDeleteClick(item)}
+                          onClick={() => handleDeleteClick(item._id)}
                           className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
                         >
                           Delete
@@ -312,7 +352,7 @@ const CancelDemoList = () => {
           }
         >
           <span>
-            Showing {filteredDemos.length} of {cancelledDemos.length} entries
+            Showing {filteredDemos.length} of {demos.length} entries
           </span>
           <div className="flex gap-1 mt-2 md:mt-0">
             <button

@@ -54,19 +54,7 @@ const DemoList = () => {
   const handleCancelClick = async (demoId) => {
     if (!window.confirm("Are you sure you want to cancel this demo?")) return;
     try {
-      const response = await api.patch(`/demo/cancel/${demoId}`);
-      setDemos((prevDemos) =>
-        prevDemos.map((d) => (d._id === demoId ? response.data : d))
-      );
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
-  const handleDeleteClick = async (demoId) => {
-    if (!window.confirm("Are you sure you want to delete this demo?")) return;
-    try {
-      await api.delete(`/demo/${demoId}`);
+      await api.patch(`/demo/cancel/${demoId}`);
       setDemos((prevDemos) => prevDemos.filter((d) => d._id !== demoId));
     } catch (err) {
       setError(err.message);
@@ -203,7 +191,6 @@ const DemoList = () => {
                 onEdit={handleEditClick}
                 onEnroll={handleEnrollClick}
                 onCancel={handleCancelClick}
-                onDelete={handleDeleteClick}
               />
             ))}
           </div>
@@ -385,12 +372,6 @@ const DemoList = () => {
                           className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
                         >
                           Cancel
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item._id)}
-                          className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
-                        >
-                          Delete
                         </button>
                       </div>
                     </td>

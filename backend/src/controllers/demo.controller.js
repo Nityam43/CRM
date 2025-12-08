@@ -1,4 +1,5 @@
 const Demo = require('../models/demo.model.js');
+const Enquiry = require('../models/enquiry.model.js');
 
 // Create a new demo
 const createDemo = async (req, res) => {
@@ -57,6 +58,16 @@ const updateDemo = async (req, res) => {
         if (!updatedDemo) {
             return res.status(404).json({ message: 'Demo not found' });
         }
+
+        // Find the corresponding enquiry and update its status
+        if (updatedDemo.email && req.body.status) {
+            await Enquiry.findOneAndUpdate(
+                { email: updatedDemo.email },
+                { status: req.body.status },
+                { new: true }
+            );
+        }
+
         res.status(200).json(updatedDemo);
     } catch (error) {
         res.status(500).json({
@@ -87,10 +98,20 @@ const deleteDemo = async (req, res) => {
 const cancelDemo = async (req, res) => {
     try {
         const { id } = req.params;
-        const canceledDemo = await Demo.findByIdAndUpdate(id, { status: 'canceled' }, { new: true });
+        const canceledDemo = await Demo.findByIdAndUpdate(id, { status: 'Cancelled' }, { new: true });
         if (!canceledDemo) {
             return res.status(404).json({ message: 'Demo not found' });
         }
+
+        // Find the corresponding enquiry and update its status
+        if (canceledDemo.email) {
+            await Enquiry.findOneAndUpdate(
+                { email: canceledDemo.email },
+                { status: 'Cancelled' },
+                { new: true }
+            );
+        }
+
         res.status(200).json(canceledDemo);
     } catch (error) {
         res.status(500).json({
