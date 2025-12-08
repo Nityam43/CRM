@@ -3,7 +3,7 @@ import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from "../ThemeContext";
 
-const EnquiryCard = ({ enquiry, onEdit, onCancel, onDemo }) => {
+const EnquiryCard = ({ enquiry, onEdit, onCancel, onDemo, onEnroll }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -144,6 +144,12 @@ const EnquiryCard = ({ enquiry, onEdit, onCancel, onDemo }) => {
             className="text-yellow-400 border border-yellow-500 px-3 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white"
           >
             Demo
+          </button>
+          <button
+            onClick={() => onEnroll(enquiry)}
+            className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
+          >
+            Enroll
           </button>
           <button
             onClick={() => onCancel(enquiry)}

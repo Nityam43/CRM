@@ -39,16 +39,8 @@ const DemoList = () => {
     navigate(`/demo/edit/${demo._id}`);
   };
 
-  const handleEnrollClick = async (demo) => {
-    if (!window.confirm("Are you sure you want to enroll this demo?")) return;
-    try {
-      const response = await api.put(`/demo/${demo._id}`, { ...demo, status: "Enrolled" });
-      setDemos((prevDemos) =>
-        prevDemos.map((d) => (d._id === demo._id ? response.data : d))
-      );
-    } catch (err) {
-      setError(err.message);
-    }
+  const handleEnrollClick = (demo) => {
+    navigate('/enroll/add', { state: { item: demo } });
   };
 
   const handleCancelClick = async (demoId) => {

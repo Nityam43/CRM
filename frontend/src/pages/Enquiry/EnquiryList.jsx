@@ -47,7 +47,6 @@ const EnquiryList = () => {
         course: enquiry.education, // Map education to course
         status: "Demo",
       });
-      setEnquiries((prev) => prev.filter((e) => e._id !== enquiry._id));
       navigate("/demo/list");
     } catch (err) {
       console.error("Failed to move to demo:", err);
@@ -55,6 +54,10 @@ const EnquiryList = () => {
         err.response?.data?.message || err.message || "Failed to move to demo"
       );
     }
+  };
+
+  const handleEnrollClick = (enquiry) => {
+    navigate('/enroll/add', { state: { item: enquiry } });
   };
 
   const handleCancelClick = async (enquiry) => {
@@ -202,6 +205,7 @@ const EnquiryList = () => {
                 onEdit={handleEditClick}
                 onCancel={handleCancelClick}
                 onDemo={handleDemoClick}
+                onEnroll={handleEnrollClick}
               />
             ))}
           </div>
@@ -402,6 +406,12 @@ const EnquiryList = () => {
                           className="text-yellow-400 border border-yellow-500 px-3 py-1 rounded text-xs hover:bg-yellow-500 hover:text-white"
                         >
                           Demo
+                        </button>
+                        <button
+                          onClick={() => handleEnrollClick(item)}
+                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
+                        >
+                          Enroll
                         </button>
                         <button
                           onClick={() => handleCancelClick(item)}

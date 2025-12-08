@@ -4,6 +4,7 @@ const userRoutes = require("./routes/user.routes");
 const enquiryRoutes = require("./routes/enquiry.routes.js");
 const listItemRoutes = require("./routes/listItem.routes.js");
 const demoRoutes = require("./routes/demo.routes.js");
+const enrollRoutes = require("./routes/enroll.routes.js");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
@@ -24,5 +25,6 @@ app.use("/user", userRoutes);
 app.use("/enquiry", enquiryRoutes);
 app.use("/listItem", listItemRoutes);
 app.use("/demo", demoRoutes);
+app.use("/enroll", enrollRoutes);
 
 module.exports = app;

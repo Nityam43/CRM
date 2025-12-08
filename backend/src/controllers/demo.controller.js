@@ -1,5 +1,6 @@
 const Demo = require('../models/demo.model.js');
 const Enquiry = require('../models/enquiry.model.js');
+const Enroll = require('../models/enroll.model.js');
 
 // Create a new demo
 const createDemo = async (req, res) => {
@@ -110,6 +111,9 @@ const cancelDemo = async (req, res) => {
                 { status: 'Cancelled' },
                 { new: true }
             );
+
+            // Also delete from enroll list if it exists
+            await Enroll.findOneAndDelete({ email: canceledDemo.email, course: canceledDemo.course });
         }
 
         res.status(200).json(canceledDemo);

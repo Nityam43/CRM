@@ -1,28 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import EnrollCard from "../../components/EnrollCard";
-
-const enrolls = [
-  {
-    id: 1,
-    enrollNo: "0019",
-    name: "Borad Ayushi Ghanshyambhai",
-    contact1: "9723540080",
-    contact2: "8140180172",
-    enrollDate: "12/08/2025 07:30 AM",
-    course: "Digital Marketing - 3M",
-    reference: "Happy Bhanderi - SS - REF",
-    courseFees: 0,
-    teacherName: "Kartik Sir",
-    counsellor: "Kishan Sir",
-    time: "3 PM",
-    placementStatus: "Placement",
-  },
-  // add more rows if you want
-];
+import api from "../../api/axios";
 
 const EnrollList = () => {
   const navigate = useNavigate();
@@ -30,14 +12,35 @@ const EnrollList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
+  const [enrolls, setEnrolls] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchEnrolls = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/enroll");
+        setEnrolls(response.data);
+      } catch (err) {
+        setError(err.message || "Failed to fetch enrollments");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEnrolls();
+  }, []);
+
 
   const handleEditClick = (enroll) => {
     console.log("Edit enroll:", enroll);
+    // Future implementation: navigate(`/enroll/edit/${enroll._id}`);
   };
 
   const handleCancelClick = (enroll) => {
     console.log("Cancel enroll:", enroll);
+    // Future implementation: Logic to cancel an enrollment
   };
 
   const filtered = useMemo(() => {
@@ -46,9 +49,9 @@ const EnrollList = () => {
     return enrolls.filter((e) =>
       [
         e.enrollNo,
-        e.name,
-        e.contact1,
-        e.contact2,
+        e.studentName,
+        e.firstMobile,
+        e.secondMobile,
         e.enrollDate,
         e.course,
         e.reference,
@@ -61,7 +64,29 @@ const EnrollList = () => {
         .toLowerCase()
         .includes(q)
     );
-  }, [search]);
+  }, [search, enrolls]);
+  
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className={isDark ? "text-white" : "text-gray-900"}>Loading enrollments...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -148,7 +173,7 @@ const EnrollList = () => {
             ) : (
               filtered.map((item) => (
                 <EnrollCard
-                  key={item.id}
+                  key={item._id}
                   enroll={item}
                   onEdit={handleEditClick}
                   onCancel={handleCancelClick}
@@ -201,7 +226,7 @@ const EnrollList = () => {
               <tbody>
                 {filtered.map((item, index) => (
                   <tr
-                    key={item.id}
+                    key={item._id}
                     className={
                       "border-t transition-colors duration-300 " +
                       (isDark
@@ -231,7 +256,7 @@ const EnrollList = () => {
                         (isDark ? "text-gray-200" : "text-gray-900")
                       }
                     >
-                      {item.name}
+                      {item.studentName}
                     </td>
                     <td
                       className={
@@ -239,8 +264,8 @@ const EnrollList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      <div>{item.contact1}</div>
-                      <div>{item.contact2}</div>
+                      <div>{item.firstMobile}</div>
+                      <div>{item.secondMobile}</div>
                     </td>
                     <td
                       className={
@@ -248,7 +273,7 @@ const EnrollList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.enrollDate}
+                      {formatDate(item.enrollDate)}
                     </td>
                     <td
                       className={
