@@ -24,6 +24,7 @@ const Login = () => {
         res.status === 200 &&
         res.data.message.toLowerCase().includes("login successful")
       ) {
+        localStorage.setItem("token", res.data.token);
         navigate("/dashboard");
       }
     } catch (error) {
