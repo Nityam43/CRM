@@ -56,9 +56,7 @@ const EnquiryList = () => {
     }
   };
 
-  const handleEnrollClick = (enquiry) => {
-    navigate('/enroll/add', { state: { item: enquiry } });
-  };
+
 
   const handleCancelClick = async (enquiry) => {
     if (
@@ -205,7 +203,7 @@ const EnquiryList = () => {
                 onEdit={handleEditClick}
                 onCancel={handleCancelClick}
                 onDemo={handleDemoClick}
-                onEnroll={handleEnrollClick}
+
               />
             ))}
           </div>
@@ -407,12 +405,7 @@ const EnquiryList = () => {
                         >
                           Demo
                         </button>
-                        <button
-                          onClick={() => handleEnrollClick(item)}
-                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
-                        >
-                          Enroll
-                        </button>
+
                         <button
                           onClick={() => handleCancelClick(item)}
                           className="text-red-400 border border-red-500 px-3 py-1 rounded text-xs hover:bg-red-500 hover:text-white"
