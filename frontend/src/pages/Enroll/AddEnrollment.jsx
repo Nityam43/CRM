@@ -31,6 +31,7 @@ const AddEnrollment = () => {
         demoId: null,
         enquiryId: null,
     });
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (sourceData) {
@@ -49,12 +50,9 @@ const AddEnrollment = () => {
                 enquiryId: sourceData.status === 'Enquiry' ? sourceData._id : null,
             }));
         } else {
-            // If no data is passed, maybe redirect back or show an error
-            // For now, we'll just log it. In a real app, handle this gracefully.
             console.error("No source data provided for enrollment.");
-            // navigate(-1); // Optional: go back if no data
         }
-    }, [sourceData]);
+    }, [sourceData, setFormData]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -63,14 +61,17 @@ const AddEnrollment = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError(null); // Reset error before submission
         try {
-            console.log("Submitting enrollment data:", formData);
             const res = await api.post("/enroll", formData);
-            console.log("Enrollment successful:", res.data);
-            navigate("/enroll-list"); // Navigate to the enroll list after success
-        } catch (error) {
-            console.error("Error creating enrollment:", error.response?.data || error.message);
-            // Handle error (e.g., show a notification to the user)
+            navigate("/enroll/list"); // Navigate to the enroll list after success
+        } catch (err) {
+            if (err.response?.status === 409) {
+                setError("This student is already enrolled in this course.");
+            } else {
+                setError("An unexpected error occurred. Please try again.");
+                console.error("Error creating enrollment:", err.response?.data || err.message);
+            }
         }
     };
 
@@ -182,6 +183,12 @@ const AddEnrollment = () => {
                             </div>
                         </div>
                         
+                        {error && (
+                            <div className="text-red-500 text-sm text-center mt-4">
+                                {error}
+                            </div>
+                        )}
+                        
                         <div className="flex justify-end pt-4">
                             <button
                                 type="submit"
@@ -196,5 +203,6 @@ const AddEnrollment = () => {
         </div>
     );
 };
+
 
 export default AddEnrollment;

@@ -104,7 +104,7 @@ const EnrollList = () => {
           (isDark ? "text-white" : "text-gray-900")
         }
       >
-        Simba Enroll List
+        Enroll List
       </h2>
 
       <div

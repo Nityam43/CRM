@@ -6,8 +6,12 @@ const {
     updateEnrollment,
     deleteEnrollment,
 } = require('../controllers/enroll.controller.js');
+const authMiddleware = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
+
+// Protect all routes
+router.use(authMiddleware);
 
 // Route to get all enrollments
 router.get('/', getEnrollments);

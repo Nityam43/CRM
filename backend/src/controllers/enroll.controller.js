@@ -36,7 +36,29 @@ const getEnrollmentById = async (req, res) => {
 // --- Create a new enrollment ---
 const createEnrollment = async (req, res) => {
     try {
-        const { email, course, studentName, ...otherData } = req.body;
+        const { studentName, course, demoId, enquiryId } = req.body;
+
+        // --- Prevent Duplicate Enrollments ---
+        let existingEnrollment;
+
+        // Priority 1: Check by demoId or enquiryId for direct links
+        if (demoId) {
+            existingEnrollment = await Enroll.findOne({ demoId });
+        } else if (enquiryId) {
+            existingEnrollment = await Enroll.findOne({ enquiryId });
+        }
+
+        // Priority 2: Fallback to check by student name and course
+        if (!existingEnrollment) {
+            existingEnrollment = await Enroll.findOne({ studentName, course });
+        }
+
+        if (existingEnrollment) {
+            return res.status(409).json({
+                message: "This student is already enrolled in this course.",
+                existingEnrollment,
+            });
+        }
 
         // 1. Generate a unique enrollment number
         const lastEnroll = await Enroll.findOne().sort({ enrollNo: -1 });
@@ -53,20 +75,12 @@ const createEnrollment = async (req, res) => {
         });
         const savedEnrollment = await newEnrollment.save();
 
-        // 3. Update the status of the corresponding Demo and Enquiry
-        if (email) {
-            // Update Demo status to 'Enrolled'
-            await Demo.findOneAndUpdate(
-                { email: email, course: course },
-                { status: 'Enrolled' },
-                { new: true }
-            );
-            // Update Enquiry status to 'Enrolled'
-            await Enquiry.findOneAndUpdate(
-                { email: email },
-                { status: 'Enrolled' },
-                { new: true }
-            );
+        // 3. Update the status of the corresponding Demo or Enquiry
+        if (demoId) {
+            await Demo.findByIdAndUpdate(demoId, { status: 'Enrolled' });
+        }
+        if (enquiryId) {
+            await Enquiry.findByIdAndUpdate(enquiryId, { status: 'Enrolled' });
         }
 
         res.status(201).json({
@@ -81,7 +95,6 @@ const createEnrollment = async (req, res) => {
         });
     }
 };
-
 
 // --- Update an enrollment by ID ---
 const updateEnrollment = async (req, res) => {
