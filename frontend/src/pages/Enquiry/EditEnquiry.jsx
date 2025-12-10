@@ -2,24 +2,26 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchDemos, fetchEnrolls, updateEnquiry } from "../../redux/thunks";
+import { unwrapResult } from "@reduxjs/toolkit";
 import AddListItemModal from "../../components/AddListItemModal";
 import api from "../../api/axios";
 
 const EditEnquiry = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalItemType, setModalItemType] = useState("");
-
   const [referenceOptions, setReferenceOptions] = useState([]);
   const [areaOptions, setAreaOptions] = useState([]);
   const [hobbiesOptions, setHobbiesOptions] = useState([]);
   const [interestOptions, setInterestOptions] = useState([]);
   const [counsellorOptions, setCounsellorOptions] = useState([]);
-
   const [formData, setFormData] = useState({
     studentName: "",
     email: "",
@@ -42,7 +44,6 @@ const EditEnquiry = () => {
     counsellor: "",
     note: "",
   });
-
   useEffect(() => {
     const fetchEnquiry = async () => {
       try {
@@ -82,12 +83,10 @@ const EditEnquiry = () => {
         console.error("Error fetching enquiry data", error);
       }
     };
-
     if (id) {
       fetchEnquiry();
     }
   }, [id]);
-
   const fetchListItems = async (type, setter) => {
     try {
       const response = await api.get(`/listItem/list?type=${type}`);
@@ -96,7 +95,6 @@ const EditEnquiry = () => {
       console.error(`Error fetching ${type} list items`, error);
     }
   };
-
   useEffect(() => {
     fetchListItems("Reference", setReferenceOptions);
     fetchListItems("Area", setAreaOptions);
@@ -104,12 +102,10 @@ const EditEnquiry = () => {
     fetchListItems("Interest", setInterestOptions);
     fetchListItems("Counsellor", setCounsellorOptions);
   }, []);
-
   const handleOpenModal = (itemType) => {
     setModalItemType(itemType);
     setIsModalOpen(true);
   };
-
   const handleAddItem = async (itemType, newItem) => {
     try {
       await api.post("/listItem/add", { name: newItem, type: itemType });
@@ -137,16 +133,17 @@ const EditEnquiry = () => {
       console.error(`Error adding ${itemType}`, error);
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.put(`/enquiry/${id}`, formData);
+      const resultAction = await dispatch(updateEnquiry({ id, enquiryData: formData }));
+      unwrapResult(resultAction);
+      dispatch(fetchDemos());
+      dispatch(fetchEnrolls());
       navigate(-1);
     } catch (error) {
       console.error("Error updating enquiry", error);

@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/slices/authSlice";
 
 const Login = () => {
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [message, setMessage] = useState("");
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,12 +22,11 @@ const Login = () => {
       });
       setMessage(res.data.message);
 
-      // Redirect to dashboard on successful login
       if (
         res.status === 200 &&
         res.data.message.toLowerCase().includes("login successful")
       ) {
-        localStorage.setItem("token", res.data.token);
+        dispatch(setUser({ user: res.data.user, token: res.data.token }));
         navigate("/dashboard");
       }
     } catch (error) {

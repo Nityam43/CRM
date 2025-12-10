@@ -5,9 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useTheme } from "../../ThemeContext";
-import api from "../../api/axios";
 import EnquiryCard from "../../components/EnquiryCard";
 import { useMediaQuery } from "react-responsive";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEnquiries, cancelEnquiry, moveEnquiryToDemo } from "../../redux/thunks";
 
 const EnquiryList = () => {
   const navigate = useNavigate();
@@ -15,50 +16,26 @@ const EnquiryList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
-  const [enquiries, setEnquiries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { enquiries, status, error } = useSelector((state) => state.enquiries);
+
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchEnquiries = async () => {
-      try {
-        const response = await api.get("/enquiry");
-        setEnquiries(response.data.filter((e) => e.status !== "Cancelled"));
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchEnquiries();
-  }, []);
+    dispatch(fetchEnquiries());
+  }, [dispatch]);
 
   const handleEditClick = (enquiry) => {
     navigate(`/enquiry/edit/${enquiry._id}`);
   };
 
-  const handleDemoClick = async (enquiry) => {
-    console.log("Moving enquiry to demo:", enquiry);
-    try {
-      await api.post("/demo", {
-        ...enquiry,
-        course: enquiry.education, // Map education to course
-        status: "Demo",
-      });
-      navigate("/demo/list");
-    } catch (err) {
-      console.error("Failed to move to demo:", err);
-      setError(
-        err.response?.data?.message || err.message || "Failed to move to demo"
-      );
-    }
+  const handleDemoClick = (enquiry) => {
+    dispatch(moveEnquiryToDemo(enquiry)).then(() => {
+      dispatch(fetchEnquiries());
+    });
   };
 
-
-
-  const handleCancelClick = async (enquiry) => {
+  const handleCancelClick = (enquiry) => {
     if (
       !window.confirm(
         `Are you sure you want to cancel the enquiry for "${enquiry.studentName}"?`
@@ -66,20 +43,16 @@ const EnquiryList = () => {
     )
       return;
 
-    try {
-      await api.put(`/enquiry/cancel/${enquiry._id}`);
-      setEnquiries((prev) => prev.filter((e) => e._id !== enquiry._id));
-    } catch (err) {
-      setError(
-        err.response?.data?.message || err.message || "Failed to cancel enquiry"
-      );
-    }
+    dispatch(cancelEnquiry(enquiry._id));
   };
 
   const filteredEnquiries = useMemo(() => {
-    if (!search.trim()) return enquiries;
+    const activeEnquiries = enquiries.filter(
+      (e) => e.status !== "Cancelled" && e.status !== "Moved to Demo"
+    );
+    if (!search.trim()) return activeEnquiries;
     const q = search.toLowerCase();
-    return enquiries.filter((e) =>
+    return activeEnquiries.filter((e) =>
       [
         e.studentName,
         e.firstMobile,
@@ -104,7 +77,7 @@ const EnquiryList = () => {
     return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
   };
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
@@ -112,7 +85,7 @@ const EnquiryList = () => {
     );
   }
 
-  if (error) {
+  if (status === 'failed') {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className="text-red-500">Error: {error}</p>

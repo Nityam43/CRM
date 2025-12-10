@@ -15,6 +15,7 @@ import CancelDemoList from "../pages/Demo/CancelDemoList";
 import EditDemo from "../pages/Demo/EditDemo";
 import EnrollList from "../pages/Enroll/EnrollList";
 import CancelEnrollList from "../pages/Enroll/CancelEnrollList";
+import EditEnroll from "../pages/Enroll/EditEnroll";
 import FeesList from "../pages/Fees/FeesList";
 import FeesPay from "../pages/Fees/FeesPay";
 import EnquiryReminders from "../pages/Enquiry/EnquiryReminders";
@@ -114,6 +115,16 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <AddEnrollment />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/enroll/edit/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditEnroll />
             </Layout>
           </ProtectedRoute>
         }

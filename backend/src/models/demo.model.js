@@ -48,6 +48,10 @@ const demoSchema = new mongoose.Schema({
     counsellor: {
         type: String,
     },
+    enquiryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Enquiry',
+    },
 }, { timestamps: true });
 
 const Demo = mongoose.model('Demo', demoSchema);

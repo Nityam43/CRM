@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import EnrollCard from "../../components/EnrollCard";
-import api from "../../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEnrolls, cancelEnroll } from "../../redux/thunks";
 
 const EnrollList = () => {
   const navigate = useNavigate();
@@ -12,35 +13,23 @@ const EnrollList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
-  const [enrolls, setEnrolls] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { enrolls, status, error } = useSelector((state) => state.enrolls);
+
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchEnrolls = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get("/enroll");
-        setEnrolls(response.data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch enrollments");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchEnrolls();
-  }, []);
+    dispatch(fetchEnrolls());
+  }, [dispatch]);
 
 
   const handleEditClick = (enroll) => {
-    console.log("Edit enroll:", enroll);
-    // Future implementation: navigate(`/enroll/edit/${enroll._id}`);
+    navigate(`/enroll/edit/${enroll._id}`);
   };
 
   const handleCancelClick = (enroll) => {
-    console.log("Cancel enroll:", enroll);
-    // Future implementation: Logic to cancel an enrollment
+    if (!window.confirm("Are you sure you want to cancel this enrollment?")) return;
+    dispatch(cancelEnroll(enroll._id));
   };
 
   const filtered = useMemo(() => {
@@ -72,7 +61,7 @@ const EnrollList = () => {
     return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
   };
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className={isDark ? "text-white" : "text-gray-900"}>Loading enrollments...</p>
@@ -80,7 +69,7 @@ const EnrollList = () => {
     );
   }
 
-  if (error) {
+  if (status === 'failed') {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className="text-red-500">Error: {error}</p>

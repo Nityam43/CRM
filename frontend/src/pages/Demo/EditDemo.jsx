@@ -2,12 +2,16 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchEnquiries, fetchEnrolls, updateDemo } from "../../redux/thunks";
+import { unwrapResult } from "@reduxjs/toolkit";
 import AddListItemModal from "../../components/AddListItemModal";
 import api from "../../api/axios";
 
 const EditDemo = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -103,7 +107,10 @@ const EditDemo = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.put(`/demo/${id}`, formData);
+      const resultAction = await dispatch(updateDemo({ id, demoData: formData }));
+      unwrapResult(resultAction);
+      dispatch(fetchEnquiries());
+      dispatch(fetchEnrolls());
       navigate(-1);
     } catch (error) {
       console.error("Error updating demo", error);

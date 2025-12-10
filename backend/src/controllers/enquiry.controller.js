@@ -53,6 +53,36 @@ const updateEnquiry = async (req, res) => {
     if (!updatedEnquiry) {
       return res.status(404).json({ message: "Enquiry not found" });
     }
+
+    // Sync updated enquiry data to related Demo and Enroll documents
+    try {
+      const Demo = require("../models/demo.model.js");
+      const Enroll = require("../models/enroll.model.js");
+
+      // Fields that should be synced across all related documents
+      const syncFields = {
+        studentName: updatedEnquiry.studentName,
+        firstMobile: updatedEnquiry.firstMobile,
+        secondMobile: updatedEnquiry.secondMobile,
+        email: updatedEnquiry.email,
+        education: updatedEnquiry.education,
+        counsellor: updatedEnquiry.counsellor,
+        reference: updatedEnquiry.reference,
+        area: updatedEnquiry.area,
+      };
+
+      // Update all demos with the same enquiryId
+      if (updatedEnquiry.email) {
+        await Demo.updateMany({ enquiryId: id }, syncFields);
+
+        // Update all enrolls with the same enquiryId
+        await Enroll.updateMany({ enquiryId: id }, syncFields);
+      }
+    } catch (err) {
+      console.error("Error syncing enquiry data to related documents:", err);
+      // Don't fail the response if sync fails, just log it
+    }
+
     res.status(200).json(updatedEnquiry);
   } catch (error) {
     res.status(500).json({

@@ -7,7 +7,8 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useMediaQuery } from "react-responsive";
 import DemoCard from "../../components/DemoCard";
-import api from "../../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDemos, cancelDemo } from "../../redux/thunks";
 
 const DemoList = () => {
   const navigate = useNavigate();
@@ -15,42 +16,26 @@ const DemoList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
-  const [demos, setDemos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const { demos, status, error } = useSelector((state) => state.demos);
+
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchDemos = async () => {
-      try {
-        const response = await api.get("/demo");
-        setDemos(response.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDemos();
-  }, []);
+    dispatch(fetchDemos());
+  }, [dispatch]);
 
   const handleEditClick = (demo) => {
     navigate(`/demo/edit/${demo._id}`);
   };
 
   const handleEnrollClick = (demo) => {
-    navigate('/enroll/add', { state: { item: demo } });
+    navigate("/enroll/add", { state: { item: demo } });
   };
 
-  const handleCancelClick = async (demoId) => {
+  const handleCancelClick = (demoId) => {
     if (!window.confirm("Are you sure you want to cancel this demo?")) return;
-    try {
-      await api.patch(`/demo/cancel/${demoId}`);
-      setDemos((prevDemos) => prevDemos.filter((d) => d._id !== demoId));
-    } catch (err) {
-      setError(err.message);
-    }
+    dispatch(cancelDemo(demoId));
   };
 
   const filteredDemos = useMemo(() => {
@@ -82,7 +67,7 @@ const DemoList = () => {
     return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
   };
 
-  if (loading) {
+  if (status === 'loading') {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
@@ -90,7 +75,7 @@ const DemoList = () => {
     );
   }
 
-  if (error) {
+  if (status === 'failed') {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className="text-red-500">Error: {error}</p>
