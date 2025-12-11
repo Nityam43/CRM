@@ -202,6 +202,29 @@ const cancelEnrollment = async (req, res) => {
   }
 };
 
+const restoreEnrollment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updatedEnrollment = await Enroll.findByIdAndUpdate(
+      id,
+      { status: "Enrolled", reason: "" },
+      { new: true }
+    );
+
+    if (!updatedEnrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+
+    res.status(200).json(updatedEnrollment);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error restoring enrollment",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getEnrollments,
   getEnrollmentById,
@@ -209,4 +232,5 @@ module.exports = {
   updateEnrollment,
   deleteEnrollment,
   cancelEnrollment,
+  restoreEnrollment,
 };

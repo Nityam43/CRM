@@ -5,6 +5,7 @@ import {
   updateEnroll,
   deleteEnroll,
   cancelEnroll,
+  restoreEnroll,
   updateDemo,
   updateEnquiry,
 } from "../thunks";
@@ -50,6 +51,12 @@ const enrollSlice = createSlice({
         }
       })
       .addCase(cancelEnroll.fulfilled, (state, action) => {
+        const newEnrolls = state.enrolls.map((enroll) =>
+          enroll._id === action.payload._id ? action.payload : enroll
+        );
+        state.enrolls = newEnrolls;
+      })
+      .addCase(restoreEnroll.fulfilled, (state, action) => {
         const newEnrolls = state.enrolls.map((enroll) =>
           enroll._id === action.payload._id ? action.payload : enroll
         );

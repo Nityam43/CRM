@@ -5,7 +5,7 @@ import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import CancelEnrollCard from "../../components/CancelEnrollCard";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEnrolls } from "../../redux/thunks";
+import { fetchEnrolls, restoreEnroll, deleteEnroll } from "../../redux/thunks";
 
 const CancelEnrollList = () => {
   const navigate = useNavigate();
@@ -27,11 +27,13 @@ const CancelEnrollList = () => {
   }, [enrolls]);
 
   const handleRestoreClick = (enroll) => {
-    console.log("Restore enroll:", enroll);
+    if (!window.confirm("Are you sure you want to restore this enrollment?")) return;
+    dispatch(restoreEnroll(enroll._id));
   };
 
   const handleDeleteClick = (enroll) => {
-    console.log("Delete enroll:", enroll);
+    if (!window.confirm("Are you sure you want to delete this enrollment permanently?")) return;
+    dispatch(deleteEnroll(enroll._id));
   };
 
   const filtered = useMemo(() => {
