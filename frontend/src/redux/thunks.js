@@ -84,7 +84,7 @@ export const deleteEnroll = createAsyncThunk('enrolls/deleteEnroll', async (id) 
     return id;
 });
 
-export const cancelEnroll = createAsyncThunk('enrolls/cancelEnroll', async (id) => {
-    const response = await api.patch(`/enroll/cancel/${id}`);
+export const cancelEnroll = createAsyncThunk('enrolls/cancelEnroll', async ({ id, reason }) => {
+    const response = await api.patch(`/enroll/cancel/${id}`, { reason });
     return response.data;
 });

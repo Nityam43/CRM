@@ -28,14 +28,20 @@ const EnrollList = () => {
   };
 
   const handleCancelClick = (enroll) => {
+    const reason = window.prompt("Enter reason for cancellation:");
+    if (reason === null) return; // If user clicks cancel on prompt
     if (!window.confirm("Are you sure you want to cancel this enrollment?")) return;
-    dispatch(cancelEnroll(enroll._id));
+    dispatch(cancelEnroll({ id: enroll._id, reason }));
   };
 
+  const activeEnrolls = useMemo(() => {
+    return enrolls.filter(enroll => enroll.status !== 'Cancelled');
+  }, [enrolls]);
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return enrolls;
+    if (!search.trim()) return activeEnrolls;
     const q = search.toLowerCase();
-    return enrolls.filter((e) =>
+    return activeEnrolls.filter((e) =>
       [
         e.enrollNo,
         e.studentName,
@@ -53,7 +59,7 @@ const EnrollList = () => {
         .toLowerCase()
         .includes(q)
     );
-  }, [search, enrolls]);
+  }, [search, activeEnrolls]);
   
   const formatDate = (value) => {
     if (!value) return "-";

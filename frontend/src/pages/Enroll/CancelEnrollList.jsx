@@ -1,26 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import CancelEnrollCard from "../../components/CancelEnrollCard";
-
-const cancelledEnrolls = [
-  // Example shape; keep empty or add sample rows
-  // {
-  //   id: 1,
-  //   enrollNo: "0019",
-  //   name: "Borad Ayushi Ghanshyambhai",
-  //   contact1: "9723540080",
-  //   contact2: "8140180172",
-  //   enrollDate: "12/08/2025 07:30 AM",
-  //   course: "Digital Marketing - 3M",
-  //   courseFees: 0,
-  //   teacherName: "Kartik Sir",
-  //   time: "3 PM",
-  //   reason: "Not interested",
-  // },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEnrolls } from "../../redux/thunks";
 
 const CancelEnrollList = () => {
   const navigate = useNavigate();
@@ -28,7 +13,18 @@ const CancelEnrollList = () => {
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
+  const dispatch = useDispatch();
+  const { enrolls, status, error } = useSelector((state) => state.enrolls);
+
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    dispatch(fetchEnrolls());
+  }, [dispatch]);
+
+  const cancelledEnrolls = useMemo(() => {
+    return enrolls.filter(enroll => enroll.status === 'Cancelled');
+  }, [enrolls]);
 
   const handleRestoreClick = (enroll) => {
     console.log("Restore enroll:", enroll);
@@ -44,9 +40,9 @@ const CancelEnrollList = () => {
     return cancelledEnrolls.filter((e) =>
       [
         e.enrollNo,
-        e.name,
-        e.contact1,
-        e.contact2,
+        e.studentName,
+        e.firstMobile,
+        e.secondMobile,
         e.enrollDate,
         e.course,
         e.teacherName,
@@ -57,7 +53,29 @@ const CancelEnrollList = () => {
         .toLowerCase()
         .includes(q)
     );
-  }, [search]);
+  }, [search, cancelledEnrolls]);
+
+  if (status === 'loading') {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className={isDark ? "text-white" : "text-gray-900"}>Loading cancelled enrollments...</p>
+      </div>
+    );
+  }
+
+  if (status === 'failed') {
+    return (
+      <div className="flex-1 px-6 py-6 text-center">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -147,7 +165,7 @@ const CancelEnrollList = () => {
             ) : (
               filtered.map((item) => (
                 <CancelEnrollCard
-                  key={item.id}
+                  key={item._id}
                   enroll={item}
                   onRestore={handleRestoreClick}
                   onDelete={handleDeleteClick}
@@ -196,7 +214,7 @@ const CancelEnrollList = () => {
               <tbody>
                 {filtered.map((item, index) => (
                   <tr
-                    key={item.id}
+                    key={item._id}
                     className={
                       "border-t transition-colors duration-300 " +
                       (isDark
@@ -231,7 +249,7 @@ const CancelEnrollList = () => {
                         (isDark ? "text-gray-200" : "text-gray-900")
                       }
                     >
-                      {item.name}
+                      {item.studentName}
                     </td>
 
                     {/* CONTACT */}
@@ -241,8 +259,8 @@ const CancelEnrollList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      <div>{item.contact1}</div>
-                      <div>{item.contact2}</div>
+                      <div>{item.firstMobile}</div>
+                      <div>{item.secondMobile}</div>
                     </td>
 
                     {/* ENROLL DATE */}
@@ -252,7 +270,7 @@ const CancelEnrollList = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.enrollDate}
+                      {formatDate(item.enrollDate)}
                     </td>
 
                     {/* COURSE */}

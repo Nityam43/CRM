@@ -58,6 +58,9 @@ const enrollSchema = new mongoose.Schema({
         type: String,
         default: 'Enrolled',
     },
+    reason: {
+        type: String, // To store reason for cancellation or other status changes
+    },
     // We can also link back to the original demo or enquiry if needed
     demoId: {
         type: mongoose.Schema.Types.ObjectId,

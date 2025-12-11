@@ -178,10 +178,35 @@ const deleteEnrollment = async (req, res) => {
   }
 };
 
+const cancelEnrollment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body; // Reason for cancellation
+
+    const updatedEnrollment = await Enroll.findByIdAndUpdate(
+      id,
+      { status: "Cancelled", reason: reason || "Not specified" },
+      { new: true }
+    );
+
+    if (!updatedEnrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+
+    res.status(200).json(updatedEnrollment);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error cancelling enrollment",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getEnrollments,
   getEnrollmentById,
   createEnrollment,
   updateEnrollment,
   deleteEnrollment,
+  cancelEnrollment,
 };

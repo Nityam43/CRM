@@ -5,6 +5,7 @@ const {
     createEnrollment,
     updateEnrollment,
     deleteEnrollment,
+    cancelEnrollment,
 } = require('../controllers/enroll.controller.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
@@ -27,5 +28,8 @@ router.put('/:id', updateEnrollment);
 
 // Route to delete an enrollment by ID
 router.delete('/:id', deleteEnrollment);
+
+// Route to cancel an enrollment by ID
+router.patch('/cancel/:id', cancelEnrollment);
 
 module.exports = router;

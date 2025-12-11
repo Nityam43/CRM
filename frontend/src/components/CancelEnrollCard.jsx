@@ -4,6 +4,12 @@ const CancelEnrollCard = ({ enroll, onRestore, onDelete }) => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
+  };
+
   return (
     <div
       className={
@@ -12,7 +18,7 @@ const CancelEnrollCard = ({ enroll, onRestore, onDelete }) => {
       }
     >
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-bold">{enroll.name}</h3>
+        <h3 className="text-lg font-bold">{enroll.studentName}</h3>
         <span className="text-sm font-semibold">{enroll.enrollNo}</span>
       </div>
       <div className="text-sm">
@@ -24,8 +30,8 @@ const CancelEnrollCard = ({ enroll, onRestore, onDelete }) => {
           >
             Contact:
           </span>{" "}
-          {enroll.contact1}
-          {enroll.contact2 && `, ${enroll.contact2}`}
+          {enroll.firstMobile}
+          {enroll.secondMobile && `, ${enroll.secondMobile}`}
         </p>
         <p>
           <span
@@ -35,7 +41,7 @@ const CancelEnrollCard = ({ enroll, onRestore, onDelete }) => {
           >
             Enroll Date:
           </span>{" "}
-          {enroll.enrollDate}
+          {formatDate(enroll.enrollDate)}
         </p>
         <p>
           <span
