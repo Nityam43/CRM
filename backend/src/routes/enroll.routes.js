@@ -2,11 +2,13 @@ const express = require('express');
 const {
     getEnrollments,
     getEnrollmentById,
+    getEnrollmentByEnrollNo,
     createEnrollment,
     updateEnrollment,
     deleteEnrollment,
     cancelEnrollment,
     restoreEnrollment,
+    addFeePayment,
 } = require('../controllers/enroll.controller.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
@@ -21,8 +23,14 @@ router.get('/', getEnrollments);
 // Route to get a single enrollment by ID
 router.get('/:id', getEnrollmentById);
 
+// Route to get a single enrollment by Enroll No
+router.get('/enrollno/:enrollNo', getEnrollmentByEnrollNo);
+
 // Route to create a new enrollment
 router.post('/', createEnrollment);
+
+// Route to add a fee payment to an enrollment
+router.post('/fees/:id', addFeePayment);
 
 // Route to update an enrollment by ID
 router.put('/:id', updateEnrollment);

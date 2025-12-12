@@ -32,6 +32,22 @@ const getEnrollmentById = async (req, res) => {
   }
 };
 
+const getEnrollmentByEnrollNo = async (req, res) => {
+  try {
+    const { enrollNo } = req.params;
+    const enrollment = await Enroll.findOne({ enrollNo: enrollNo }).populate('demoId').populate('enquiryId');
+    if (!enrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+    res.status(200).json(enrollment);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching enrollment",
+      error: error.message,
+    });
+  }
+};
+
 // --- Create a new enrollment ---
 const createEnrollment = async (req, res) => {
   try {
@@ -71,6 +87,9 @@ const createEnrollment = async (req, res) => {
     const newEnrollment = new Enroll({
       ...req.body,
       enrollNo: newEnrollNo,
+      totalFees: req.body.courseFees,
+      paidFees: 0,
+      pendingFees: req.body.courseFees,
     });
     const savedEnrollment = await newEnrollment.save();
 
@@ -225,12 +244,38 @@ const restoreEnrollment = async (req, res) => {
   }
 };
 
+const addFeePayment = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const payment = req.body;
+
+        const enrollment = await Enroll.findById(id);
+        if (!enrollment) {
+            return res.status(404).json({ message: "Enrollment not found" });
+        }
+
+        enrollment.payments.push(payment);
+        enrollment.paidFees += payment.amount;
+        enrollment.pendingFees -= payment.amount;
+
+        const updatedEnrollment = await enrollment.save();
+        res.status(200).json(updatedEnrollment);
+    } catch (error) {
+        res.status(500).json({
+            message: "Error adding fee payment",
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
   getEnrollments,
   getEnrollmentById,
+  getEnrollmentByEnrollNo,
   createEnrollment,
   updateEnrollment,
   deleteEnrollment,
   cancelEnrollment,
   restoreEnrollment,
+  addFeePayment,
 };

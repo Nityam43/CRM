@@ -1,5 +1,38 @@
 const mongoose = require('mongoose');
 
+const paymentSchema = new mongoose.Schema({
+    amount: {
+        type: Number,
+        required: true,
+    },
+    paymentDate: {
+        type: Date,
+        default: Date.now,
+    },
+    paymentType: {
+        type: String,
+        required: true,
+    },
+    note: {
+        type: String,
+    },
+    gstNo: {
+        type: String,
+    },
+    reminderDate: {
+        type: Date,
+    },
+    bankName: {
+        type: String,
+    },
+    chequeNo: {
+        type: String,
+    },
+    chequeDate: {
+        type: Date,
+    },
+});
+
 const enrollSchema = new mongoose.Schema({
     // Fields from Enquiry/Demo
     studentName: {
@@ -42,6 +75,16 @@ const enrollSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    totalFees: {
+        type: Number,
+    },
+    paidFees: {
+        type: Number,
+        default: 0
+    },
+    pendingFees: {
+        type: Number,
+    },
     teacherName: {
         type: String,
         required: true,
@@ -61,6 +104,7 @@ const enrollSchema = new mongoose.Schema({
     reason: {
         type: String, // To store reason for cancellation or other status changes
     },
+    payments: [paymentSchema],
     // We can also link back to the original demo or enquiry if needed
     demoId: {
         type: mongoose.Schema.Types.ObjectId,
