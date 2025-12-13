@@ -1,29 +1,42 @@
-import React, { useState, useMemo } from "react";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import React, { useState, useMemo, useEffect } from "react";
+import { ArrowLeftIcon, CurrencyRupeeIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import FeesCard from "../../components/FeesCard";
-
-const feesData = [
-  // empty for now to match the "No data available" image
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEnrolls } from "../../redux/thunks";
 
 const FeesList = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [search, setSearch] = useState("");
+  const { enrolls, status, error } = useSelector((state) => state.enrolls);
+
+  useEffect(() => {
+    // We fetch enrolls and the page component derives fee information.
+    if (status === "idle") {
+      dispatch(fetchEnrolls());
+    }
+  }, [status, dispatch]);
+
+  const handleAction = (enrollNo) => {
+    navigate(`/fees/pay?enrollNo=${enrollNo}`);
+  };
 
   const filteredData = useMemo(() => {
-    if (!search.trim()) return feesData;
+    if (!search.trim()) return enrolls;
     const q = search.toLowerCase();
-    return feesData.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(q)
+    return enrolls.filter((item) =>
+      (item.studentName?.toLowerCase() || "").includes(q) ||
+      (item.enrollNo?.toLowerCase() || "").includes(q) ||
+      (item.course?.toLowerCase() || "").includes(q)
     );
-  }, [search]);
+  }, [search, enrolls]);
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -41,7 +54,7 @@ const FeesList = () => {
           (isDark ? "text-white" : "text-gray-900")
         }
       >
-        Simba Payments List
+        Student Fee Status
       </h2>
 
       <div
@@ -91,14 +104,18 @@ const FeesList = () => {
                   ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
                   : "bg-white border-gray-300 text-gray-800")
               }
-              placeholder="Type to filter..."
+              placeholder="Filter by name, enroll no, course..."
             />
           </div>
         </div>
 
         {isMobile ? (
           <div>
-            {filteredData.length === 0 ? (
+            {status === 'loading' ? (
+              <p className={"text-center py-4 " + (isDark ? "text-gray-400" : "text-gray-500")}>Loading...</p>
+            ) : status === 'failed' ? (
+              <p className={"text-center py-4 text-red-500"}>{error}</p>
+            ) : filteredData.length === 0 ? (
               <p
                 className={
                   "text-center py-4 " +
@@ -108,7 +125,7 @@ const FeesList = () => {
                 No data available
               </p>
             ) : (
-              filteredData.map((item) => <FeesCard key={item.id} fee={item} />)
+              filteredData.map((item) => <FeesCard key={item._id} fee={item} onAction={() => handleAction(item.enrollNo)} />)
             )}
           </div>
         ) : (
@@ -122,16 +139,13 @@ const FeesList = () => {
               >
                 <tr>
                   {[
-                    "NO",
                     "ENROLL NO.",
-                    "PRINT",
                     "STUDENT NAME",
-                    "CONTACT",
+                    "COURSE",
+                    "TOTAL FEES",
                     "PAID FEES",
-                    "REMINDER FEES",
-                    "REMAINING FEES",
-                    "PAYMENT DATE",
-                    "PAYMENT METHOD",
+                    "PENDING FEES",
+                    "STATUS",
                     "ACTION",
                   ].map((h) => (
                     <th
@@ -148,10 +162,14 @@ const FeesList = () => {
               </thead>
 
               <tbody>
-                {filteredData.length === 0 ? (
+                {status === 'loading' ? (
+                  <tr><td colSpan={8} className={"px-4 py-6 text-center " + (isDark ? "text-gray-400" : "text-gray-500")}>Loading...</td></tr>
+                ) : status === 'failed' ? (
+                  <tr><td colSpan={8} className="px-4 py-6 text-center text-red-500">{error}</td></tr>
+                ) : filteredData.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={11}
+                      colSpan={8}
                       className={
                         "px-4 py-6 text-center " +
                         (isDark ? "text-gray-400" : "text-gray-500")
@@ -161,9 +179,9 @@ const FeesList = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredData.map((item, index) => (
+                  filteredData.map((item) => (
                     <tr
-                      key={item.id}
+                      key={item._id}
                       className={
                         "border-t transition-colors duration-300 " +
                         (isDark
@@ -171,7 +189,25 @@ const FeesList = () => {
                           : "border-gray-200 hover:bg-gray-50")
                       }
                     >
-                      {/* You would render your table cells here */}
+                      <td className="px-4 py-2">{item.enrollNo}</td>
+                      <td className="px-4 py-2">{item.studentName}</td>
+                      <td className="px-4 py-2">{item.course}</td>
+                      <td className="px-4 py-2">{item.totalFees}</td>
+                      <td className="px-4 py-2">{item.paidFees}</td>
+                      <td className="px-4 py-2">{item.pendingFees}</td>
+                      <td className="px-4 py-2">
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                            item.pendingFees <= 0 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                        }`}>
+                            {item.pendingFees <= 0 ? 'Paid' : 'Pending'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <button onClick={() => handleAction(item.enrollNo)} className="text-blue-500 hover:text-blue-700 flex items-center">
+                          <CurrencyRupeeIcon className="h-5 w-5 mr-1" />
+                          Pay
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -188,8 +224,7 @@ const FeesList = () => {
           }
         >
           <span>
-            Showing {filteredData.length} to {feesData.length} of{" "}
-            {feesData.length} entries
+            Showing {filteredData.length} of {enrolls.length} entries
           </span>
           <div className="flex gap-2 mt-2 md:mt-0">
             <button

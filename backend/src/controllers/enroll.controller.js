@@ -117,7 +117,22 @@ const createEnrollment = async (req, res) => {
 const updateEnrollment = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedEnrollment = await Enroll.findByIdAndUpdate(id, req.body, {
+    const updateData = req.body;
+
+    // --- Recalculate pending fees if total fees are changed ---
+    if (updateData.totalFees !== undefined) {
+      const enrollment = await Enroll.findById(id);
+      if (!enrollment) {
+        return res.status(404).json({ message: "Enrollment not found" });
+      }
+      const paidFees = Number(enrollment.paidFees) || 0;
+      const newTotalFees = Number(updateData.totalFees);
+      if (!isNaN(newTotalFees)) {
+        updateData.pendingFees = newTotalFees - paidFees;
+      }
+    }
+
+    const updatedEnrollment = await Enroll.findByIdAndUpdate(id, updateData, {
       new: true,
     });
     if (!updatedEnrollment) {
@@ -254,15 +269,67 @@ const addFeePayment = async (req, res) => {
             return res.status(404).json({ message: "Enrollment not found" });
         }
 
+        const paymentAmount = Number(payment.amount);
+        if (isNaN(paymentAmount)) {
+            return res.status(400).json({ message: "Invalid payment amount" });
+        }
+
         enrollment.payments.push(payment);
-        enrollment.paidFees += payment.amount;
-        enrollment.pendingFees -= payment.amount;
+
+        const paidFees = Number(enrollment.paidFees) || 0;
+        let pendingFees = Number(enrollment.pendingFees);
+
+        if (isNaN(pendingFees)) {
+            const totalFees = Number(enrollment.totalFees) || 0;
+            pendingFees = totalFees - paidFees;
+        }
+
+        enrollment.paidFees = paidFees + paymentAmount;
+        enrollment.pendingFees = pendingFees - paymentAmount;
+
+        const updatedEnrollment = await enrollment.save();
+        res.status(200).json(updatedEnrollment);
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: "Validation error while adding fee payment.",
+                error: error.message,
+            });
+        }
+        res.status(500).json({
+            message: "Error adding fee payment",
+            error: error.message,
+        });
+    }
+};
+
+const deleteFeePayment = async (req, res) => {
+    try {
+        const { id, paymentId } = req.params;
+
+        const enrollment = await Enroll.findById(id);
+        if (!enrollment) {
+            return res.status(404).json({ message: "Enrollment not found" });
+        }
+
+        const payment = enrollment.payments.id(paymentId);
+        if (!payment) {
+            return res.status(404).json({ message: "Payment not found" });
+        }
+
+        const paymentAmount = Number(payment.amount) || 0;
+
+        enrollment.payments.pull(paymentId);
+
+
+        enrollment.paidFees = (Number(enrollment.paidFees) || 0) - paymentAmount;
+        enrollment.pendingFees = (Number(enrollment.pendingFees) || 0) + paymentAmount;
 
         const updatedEnrollment = await enrollment.save();
         res.status(200).json(updatedEnrollment);
     } catch (error) {
         res.status(500).json({
-            message: "Error adding fee payment",
+            message: "Error deleting fee payment",
             error: error.message,
         });
     }
@@ -278,4 +345,5 @@ module.exports = {
   cancelEnrollment,
   restoreEnrollment,
   addFeePayment,
+  deleteFeePayment,
 };

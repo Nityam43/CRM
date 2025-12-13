@@ -93,3 +93,40 @@ export const restoreEnroll = createAsyncThunk('enrolls/restoreEnroll', async (id
     const response = await api.patch(`/enroll/restore/${id}`);
     return response.data;
 });
+
+// Fees Thunks
+export const fetchFees = createAsyncThunk('fees/fetchFees', async () => {
+    const response = await api.get('/enroll');
+    const enrollments = response.data;
+    const fees = enrollments.reduce((acc, enrollment) => {
+        const studentInfo = {
+            enrollmentId: enrollment._id, // Add enrollmentId
+            enrollNo: enrollment.enrollNo,
+            studentName: enrollment.studentName,
+            contact: enrollment.firstMobile,
+            course: enrollment.course,
+            totalFees: enrollment.totalFees,
+            paidFees: enrollment.paidFees,
+            pendingFees: enrollment.pendingFees,
+        };
+        enrollment.payments.forEach(payment => {
+            acc.push({
+                ...studentInfo,
+                ...payment,
+            });
+        });
+        return acc;
+    }, []);
+    return fees;
+});
+
+export const addFee = createAsyncThunk('fees/addFee', async ({ id, paymentData }) => {
+    const response = await api.post(`/enroll/fees/${id}`, paymentData);
+    return response.data; // Return the full updated enrollment
+});
+
+export const deleteFee = createAsyncThunk('fees/deleteFee', async ({ id, paymentId }) => {
+    const response = await api.delete(`/enroll/fees/${id}/${paymentId}`);
+    return response.data; // Return the full updated enrollment
+});
+

@@ -9,6 +9,7 @@ const {
     cancelEnrollment,
     restoreEnrollment,
     addFeePayment,
+    deleteFeePayment,
 } = require('../controllers/enroll.controller.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
@@ -31,6 +32,9 @@ router.post('/', createEnrollment);
 
 // Route to add a fee payment to an enrollment
 router.post('/fees/:id', addFeePayment);
+
+// Route to delete a fee payment from an enrollment
+router.delete('/fees/:id/:paymentId', deleteFeePayment);
 
 // Route to update an enrollment by ID
 router.put('/:id', updateEnrollment);

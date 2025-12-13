@@ -1,11 +1,15 @@
-import { useState } from "react";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { ArrowLeftIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import api from "../../api/axios";
+import { useDispatch } from "react-redux";
+import { addFee, updateEnroll, deleteFee } from "../../redux/thunks";
 
 const FeesPay = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -13,7 +17,7 @@ const FeesPay = () => {
   const [enrollment, setEnrollment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const [payAmount, setPayAmount] = useState("");
   const [paymentType, setPaymentType] = useState("Cash");
   const [gstNo, setGstNo] = useState("");
@@ -25,22 +29,41 @@ const FeesPay = () => {
   const [chequeDate, setChequeDate] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
 
+  // State for editing total fees
+  const [isEditingFees, setIsEditingFees] = useState(false);
+  const [newTotalFees, setNewTotalFees] = useState("");
+  const [feeEditLoading, setFeeEditLoading] = useState(false);
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+  const performSearch = async (searchEnrollNo) => {
+    if (!searchEnrollNo) return;
     setLoading(true);
     setError(null);
     setEnrollment(null);
     try {
-      const response = await api.get(`/enroll/enrollno/${enrollNo}`);
+      const response = await api.get(`/enroll/enrollno/${searchEnrollNo}`);
       setEnrollment(response.data);
       setNote(response.data.note || "");
+      setNewTotalFees(response.data.totalFees);
     } catch (err) {
       setError("Enrollment not found");
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const enrollNoFromUrl = params.get('enrollNo');
+    if (enrollNoFromUrl) {
+        setEnrollNo(enrollNoFromUrl);
+        performSearch(enrollNoFromUrl);
+    }
+  }, [location]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    performSearch(enrollNo);
   };
 
   const handleFeeSubmit = async (e) => {
@@ -61,13 +84,55 @@ const FeesPay = () => {
     };
 
     try {
-      await api.post(`/enroll/fees/${enrollment._id}`, paymentData);
-      navigate("/fees/list");
+      const updatedEnrollment = await dispatch(addFee({ id: enrollment._id, paymentData })).unwrap();
+      setEnrollment(updatedEnrollment);
+      // Clear payment form
+      setPayAmount("");
+      setPaymentType("Cash");
+      setBankName("");
+      setChequeNo("");
+      setChequeDate("");
+      setPaymentDate("");
     } catch (err) {
       setError("Failed to submit fees. Please try again.");
       console.error(err);
     } finally {
       setSubmitLoading(false);
+    }
+  };
+
+  const handleFeeEditSave = async () => {
+    setFeeEditLoading(true);
+    setError(null);
+    try {
+        const updated = await dispatch(updateEnroll({
+            id: enrollment._id,
+            enrollData: { totalFees: Number(newTotalFees) }
+        })).unwrap();
+        setEnrollment(updated);
+        setIsEditingFees(false);
+    } catch (error) {
+        setError("Failed to update fees.");
+        console.error(error);
+    } finally {
+        setFeeEditLoading(false);
+    }
+  };
+
+  const handleFeeEditCancel = () => {
+    setIsEditingFees(false);
+    setNewTotalFees(enrollment.totalFees);
+  };
+
+  const handleDeletePayment = async (paymentId) => {
+    if (window.confirm("Are you sure you want to delete this payment?")) {
+        try {
+            const updatedEnrollment = await dispatch(deleteFee({ id: enrollment._id, paymentId })).unwrap();
+            setEnrollment(updatedEnrollment);
+        } catch (error) {
+            setError("Failed to delete payment.");
+            console.error(error);
+        }
     }
   };
 
@@ -134,7 +199,7 @@ const FeesPay = () => {
           </button>
         </form>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         {enrollment && (
           <div className="mt-6 space-y-6">
@@ -160,7 +225,9 @@ const FeesPay = () => {
                   </p>
                   <p className="font-semibold mb-1">
                     First Mobile No :{" "}
-                    <span className="font-normal">{enrollment.firstMobile}</span>
+                    <span className="font-normal">
+                      {enrollment.firstMobile}
+                    </span>
                   </p>
                 </div>
 
@@ -173,7 +240,9 @@ const FeesPay = () => {
                   </p>
                   <p className="font-semibold mb-1">
                     Second Mobile No :{" "}
-                    <span className="font-normal">{enrollment.secondMobile}</span>
+                    <span className="font-normal">
+                      {enrollment.secondMobile}
+                    </span>
                   </p>
                   <p className="font-semibold mb-1">
                     Register Date :{" "}
@@ -253,6 +322,7 @@ const FeesPay = () => {
                       <th className="py-2 px-4 text-left">Bank Name</th>
                       <th className="py-2 px-4 text-left">Cheque No</th>
                       <th className="py-2 px-4 text-left">Cheque Date</th>
+                      <th className="py-2 px-4 text-left">Actions</th>
                     </tr>
                   </thead>
                   <tbody
@@ -263,19 +333,30 @@ const FeesPay = () => {
                     {enrollment.payments?.length ? (
                       enrollment.payments.map((p) => (
                         <tr key={p._id} className="border-t border-[#2c3250]">
-                          <td className="py-2 px-4">{new Date(p.paymentDate).toLocaleDateString()}</td>
+                          <td className="py-2 px-4">
+                            {new Date(p.paymentDate).toLocaleDateString()}
+                          </td>
                           <td className="py-2 px-4">{p.amount}</td>
                           <td className="py-2 px-4">{p.paymentType}</td>
                           <td className="py-2 px-4">{p.bankName}</td>
                           <td className="py-2 px-4">{p.chequeNo}</td>
-                          <td className="py-2 px-4">{p.chequeDate ? new Date(p.chequeDate).toLocaleDateString() : ''}</td>
+                          <td className="py-2 px-4">
+                            {p.chequeDate
+                              ? new Date(p.chequeDate).toLocaleDateString()
+                              : ""}
+                          </td>
+                          <td className="py-2 px-4">
+                            <button onClick={() => handleDeletePayment(p._id)} className="text-red-500 hover:text-red-700">
+                                <TrashIcon className="h-5 w-5" />
+                            </button>
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr className="border-t border-[#2c3250]">
                         <td
                           className="py-3 px-4 text-center text-gray-400"
-                          colSpan={6}
+                          colSpan={7}
                         >
                           No payments yet
                         </td>
@@ -293,7 +374,7 @@ const FeesPay = () => {
                 (isDark ? "bg-[#1B2136]" : "bg-white")
               }
             >
-              <div className="px-5 pt-4 pb-3 border-b border-[#2c3250]">
+              <div className="flex justify-between items-center px-5 pt-4 pb-3 border-b border-[#2c3250]">
                 <p
                   className={
                     "font-semibold text-sm " +
@@ -302,6 +383,12 @@ const FeesPay = () => {
                 >
                   Fees Status
                 </p>
+                {!isEditingFees && (
+                  <button onClick={() => setIsEditingFees(true)} className={"text-sm flex items-center " + (isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-800")}>
+                    <PencilIcon className="h-4 w-4 mr-1" />
+                    Edit
+                  </button>
+                )}
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs md:text-sm">
@@ -326,25 +413,61 @@ const FeesPay = () => {
                   >
                     <tr className="border-t border-[#2c3250]">
                       <td className="py-2 px-4">{enrollment.course}</td>
-                      <td className="py-2 px-4">{enrollment.totalFees}</td>
+                      <td className="py-2 px-4">
+                        {isEditingFees ? (
+                            <input
+                            type="number"
+                            value={newTotalFees}
+                            onChange={(e) => setNewTotalFees(e.target.value)}
+                            className={"w-24 px-2 py-1 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")}
+                            />
+                        ) : (
+                            enrollment.totalFees
+                        )}
+                      </td>
                       <td className="py-2 px-4">{enrollment.paidFees}</td>
-                      <td className="py-2 px-4">{enrollment.pendingFees}</td>
+                      <td className="py-2 px-4">
+                        {isEditingFees
+                            ? (Number(newTotalFees) || 0) - (enrollment.paidFees || 0)
+                            : enrollment.pendingFees
+                        }
+                        </td>
                     </tr>
                     <tr className="border-t border-[#2c3250]">
                       <td className="py-2 px-4 font-semibold">Total</td>
                       <td className="py-2 px-4 font-semibold">
-                        {enrollment.totalFees}
+                      {isEditingFees ? (
+                            <input
+                            type="number"
+                            value={newTotalFees}
+                            onChange={(e) => setNewTotalFees(e.target.value)}
+                            className={"w-24 px-2 py-1 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")}
+                            />
+                        ) : (
+                            enrollment.totalFees
+                        )}
                       </td>
                       <td className="py-2 px-4 font-semibold">
                         {enrollment.paidFees}
                       </td>
                       <td className="py-2 px-4 font-semibold">
-                        {enrollment.pendingFees}
+                        {isEditingFees
+                            ? (Number(newTotalFees) || 0) - (enrollment.paidFees || 0)
+                            : enrollment.pendingFees
+                        }
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+              {isEditingFees && (
+                <div className="p-4 flex justify-end gap-3">
+                    <button onClick={handleFeeEditCancel} className={"px-4 py-1 rounded-md text-sm " + (isDark ? "bg-gray-600 hover:bg-gray-500" : "bg-gray-200 hover:bg-gray-300")}>Cancel</button>
+                    <button onClick={handleFeeEditSave} disabled={feeEditLoading} className="px-4 py-1 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400">
+                        {feeEditLoading ? 'Saving...' : 'Save'}
+                    </button>
+                </div>
+              )}
             </div>
 
             {/* Fees Pay form (bottom card) */}
@@ -390,19 +513,73 @@ const FeesPay = () => {
                   </select>
                 </div>
 
-                {paymentType === 'Cheque' && (
+                {paymentType === "Cheque" && (
                   <>
                     <div>
-                      <label className={isDark ? "text-gray-300 text-xs" : "text-gray-700 text-xs"}>Bank Name :</label>
-                      <input type="text" value={bankName} onChange={e => setBankName(e.target.value)} className={"mt-1 w-full px-4 py-2 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")} />
+                      <label
+                        className={
+                          isDark
+                            ? "text-gray-300 text-xs"
+                            : "text-gray-700 text-xs"
+                        }
+                      >
+                        Bank Name :
+                      </label>
+                      <input
+                        type="text"
+                        value={bankName}
+                        onChange={(e) => setBankName(e.target.value)}
+                        className={
+                          "mt-1 w-full px-4 py-2 rounded-md border text-sm " +
+                          (isDark
+                            ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                            : "bg-white border-gray-300 text-gray-900")
+                        }
+                      />
                     </div>
                     <div>
-                      <label className={isDark ? "text-gray-300 text-xs" : "text-gray-700 text-xs"}>Cheque No :</label>
-                      <input type="text" value={chequeNo} onChange={e => setChequeNo(e.target.value)} className={"mt-1 w-full px-4 py-2 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")} />
+                      <label
+                        className={
+                          isDark
+                            ? "text-gray-300 text-xs"
+                            : "text-gray-700 text-xs"
+                        }
+                      >
+                        Cheque No :
+                      </label>
+                      <input
+                        type="text"
+                        value={chequeNo}
+                        onChange={(e) => setChequeNo(e.target.value)}
+                        className={
+                          "mt-1 w-full px-4 py-2 rounded-md border text-sm " +
+                          (isDark
+                            ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                            : "bg-white border-gray-300 text-gray-900")
+                        }
+                      />
                     </div>
                     <div>
-                      <label className={isDark ? "text-gray-300 text-xs" : "text-gray-700 text-xs"}>Cheque Date :</label>
-                      <input type="date" value={chequeDate} onChange={e => setChequeDate(e.target.value)} className={"mt-1 w-full px-4 py-2 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")} />
+                      <label
+                        className={
+                          isDark
+                            ? "text-gray-300 text-xs"
+                            : "text-gray-700 text-xs"
+                        }
+                      >
+                        Cheque Date :
+                      </label>
+                      <input
+                        type="date"
+                        value={chequeDate}
+                        onChange={(e) => setChequeDate(e.target.value)}
+                        className={
+                          "mt-1 w-full px-4 py-2 rounded-md border text-sm " +
+                          (isDark
+                            ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
+                            : "bg-white border-gray-300 text-gray-900")
+                        }
+                      />
                     </div>
                   </>
                 )}
@@ -585,8 +762,8 @@ const FeesPay = () => {
               <div className="mt-5 flex justify-end">
                 <button
                   type="submit"
-                  disabled={submitLoading}
-                  className="px-6 py-2 rounded-md bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700"
+                  disabled={!payAmount || submitLoading}
+                  className="px-6 py-2 rounded-md bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 disabled:bg-blue-400"
                 >
                   {submitLoading ? "Submitting..." : "Submit"}
                 </button>
