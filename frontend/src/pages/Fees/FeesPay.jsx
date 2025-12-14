@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import api from "../../api/axios";
 import { useDispatch } from "react-redux";
-import { addFee, updateEnroll, deleteFee } from "../../redux/thunks";
+import { addFee, updateEnroll, deleteFee, fetchEnrolls } from "../../redux/thunks";
 
 const FeesPay = () => {
   const navigate = useNavigate();
@@ -86,6 +86,7 @@ const FeesPay = () => {
     try {
       const updatedEnrollment = await dispatch(addFee({ id: enrollment._id, paymentData })).unwrap();
       setEnrollment(updatedEnrollment);
+      await dispatch(fetchEnrolls());
       // Clear payment form
       setPayAmount("");
       setPaymentType("Cash");

@@ -19,10 +19,8 @@ const FeesList = () => {
 
   useEffect(() => {
     // We fetch enrolls and the page component derives fee information.
-    if (status === "idle") {
-      dispatch(fetchEnrolls());
-    }
-  }, [status, dispatch]);
+    dispatch(fetchEnrolls());
+  }, [dispatch]);
 
   const handleAction = (enrollNo) => {
     navigate(`/fees/pay?enrollNo=${enrollNo}`);
