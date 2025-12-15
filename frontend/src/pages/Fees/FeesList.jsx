@@ -26,6 +26,14 @@ const FeesList = () => {
     navigate(`/fees/pay?enrollNo=${enrollNo}`);
   };
 
+  const handleReceipt = (enrollNo) => {
+    navigate(`/fees/receipt/${enrollNo}`);
+  };
+
+  const handlePaymentsHistory = (enrollNo) => {
+    navigate(`/fees/history/${enrollNo}`);
+  };
+
   const filteredData = useMemo(() => {
     if (!search.trim()) return enrolls;
     const q = search.toLowerCase();
@@ -123,7 +131,7 @@ const FeesList = () => {
                 No data available
               </p>
             ) : (
-              filteredData.map((item) => <FeesCard key={item._id} fee={item} onAction={() => handleAction(item.enrollNo)} />)
+              filteredData.map((item) => <FeesCard key={item._id} fee={item} onAction={() => handleAction(item.enrollNo)} onReceipt={() => handleReceipt(item.enrollNo)} onPayments={() => handlePaymentsHistory(item.enrollNo)} />)
             )}
           </div>
         ) : (
@@ -145,6 +153,7 @@ const FeesList = () => {
                     "PENDING FEES",
                     "STATUS",
                     "ACTION",
+                    "PAYMENTS",
                   ].map((h) => (
                     <th
                       key={h}
@@ -201,9 +210,19 @@ const FeesList = () => {
                         </span>
                       </td>
                       <td className="px-4 py-2">
-                        <button onClick={() => handleAction(item.enrollNo)} className="text-blue-500 hover:text-blue-700 flex items-center">
-                          <CurrencyRupeeIcon className="h-5 w-5 mr-1" />
-                          Pay
+                        <div className="flex items-center">
+                          <button onClick={() => handleAction(item.enrollNo)} className="text-blue-500 hover:text-blue-700 flex items-center">
+                            <CurrencyRupeeIcon className="h-5 w-5 mr-1" />
+                            Pay
+                          </button>
+                          <button onClick={() => handleReceipt(item.enrollNo)} className="ml-4 text-green-500 hover:text-green-700 flex items-center">
+                            Receipt
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <button onClick={() => handlePaymentsHistory(item.enrollNo)} className="text-purple-500 hover:text-purple-700 flex items-center">
+                          Payments
                         </button>
                       </td>
                     </tr>

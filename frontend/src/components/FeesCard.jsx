@@ -1,7 +1,7 @@
 import { CurrencyRupeeIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../ThemeContext";
 
-const FeesCard = ({ fee, onAction }) => { // fee is an enrollment object
+const FeesCard = ({ fee, onAction, onReceipt, onPayments }) => { // fee is an enrollment object
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -76,6 +76,12 @@ const FeesCard = ({ fee, onAction }) => { // fee is an enrollment object
         <button onClick={onAction} className="flex items-center text-blue-400 border border-blue-500 px-3 py-1 rounded text-xs hover:bg-blue-500 hover:text-white">
             <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
             Pay
+        </button>
+        <button onClick={onReceipt} className="flex items-center text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white">
+            Receipt
+        </button>
+        <button onClick={onPayments} className="flex items-center text-purple-400 border border-purple-500 px-3 py-1 rounded text-xs hover:bg-purple-500 hover:text-white">
+            Payments
         </button>
       </div>
     </div>

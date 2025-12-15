@@ -18,6 +18,8 @@ import CancelEnrollList from "../pages/Enroll/CancelEnrollList";
 import EditEnroll from "../pages/Enroll/EditEnroll";
 import FeesList from "../pages/Fees/FeesList";
 import FeesPay from "../pages/Fees/FeesPay";
+import FeesReceipt from "../pages/Fees/FeesReceipt";
+import PaymentHistory from "../pages/Fees/PaymentHistory";
 import EnquiryReminders from "../pages/Enquiry/EnquiryReminders";
 import DemoReminder from "../pages/Demo/DemoReminder";
 import AddEnrollment from "../pages/Enroll/AddEnrollment";
@@ -185,6 +187,36 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <FeesPay />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/receipt/:enrollNo"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <FeesReceipt />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/receipt/:enrollNo/:paymentId"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <FeesReceipt />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/history/:enrollNo"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <PaymentHistory />
             </Layout>
           </ProtectedRoute>
         }

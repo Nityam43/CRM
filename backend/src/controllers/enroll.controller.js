@@ -83,13 +83,16 @@ const createEnrollment = async (req, res) => {
       newEnrollNo = (lastNo + 1).toString().padStart(4, "0");
     }
 
+    const courseFees = Number(req.body.courseFees) || 0;
+    const totalFeesWithGST = courseFees * 1.18;
+
     // 2. Create and save the new enrollment
     const newEnrollment = new Enroll({
       ...req.body,
       enrollNo: newEnrollNo,
-      totalFees: req.body.courseFees,
+      totalFees: totalFeesWithGST,
       paidFees: 0,
-      pendingFees: req.body.courseFees,
+      pendingFees: totalFeesWithGST,
     });
     const savedEnrollment = await newEnrollment.save();
 
@@ -119,14 +122,23 @@ const updateEnrollment = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    // --- Recalculate pending fees if total fees are changed ---
-    if (updateData.totalFees !== undefined) {
+    // --- Recalculate fees if courseFees or totalFees are changed ---
+    if (updateData.courseFees !== undefined || updateData.totalFees !== undefined) {
       const enrollment = await Enroll.findById(id);
       if (!enrollment) {
         return res.status(404).json({ message: "Enrollment not found" });
       }
+      
+      let newTotalFees;
+      if (updateData.courseFees !== undefined) {
+        const courseFees = Number(updateData.courseFees) || 0;
+        newTotalFees = courseFees * 1.18;
+        updateData.totalFees = newTotalFees;
+      } else {
+        newTotalFees = Number(updateData.totalFees);
+      }
+
       const paidFees = Number(enrollment.paidFees) || 0;
-      const newTotalFees = Number(updateData.totalFees);
       if (!isNaN(newTotalFees)) {
         updateData.pendingFees = newTotalFees - paidFees;
       }
