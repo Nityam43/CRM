@@ -8,6 +8,14 @@ const createDemo = async (req, res) => {
   try {
     const demo = new Demo(req.body);
     await demo.save();
+
+    // Find the corresponding enquiry and update its status
+    if (req.body.enquiryId) {
+      await Enquiry.findByIdAndUpdate(req.body.enquiryId, {
+        status: "Moved to Demo",
+      });
+    }
+
     res.status(201).json({
       message: "Demo created successfully",
       data: demo,
