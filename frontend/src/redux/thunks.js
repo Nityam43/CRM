@@ -33,6 +33,7 @@ export const moveEnquiryToDemo = createAsyncThunk('enquiries/moveEnquiryToDemo',
     course: enquiry.education,
     status: 'Demo',
     enquiryId: enquiry._id,
+    reminder: enquiry.reminderDate, // Add this line
   });
   return { newDemo: response.data.data, originalEnquiryId: enquiry._id };
 });

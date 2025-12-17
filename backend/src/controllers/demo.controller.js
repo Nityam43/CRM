@@ -6,7 +6,12 @@ const Enroll = require("../models/enroll.model.js");
 const createDemo = async (req, res) => {
   console.log("Attempting to create demo with data:", req.body);
   try {
-    const demo = new Demo(req.body);
+    const demoData = { ...req.body };
+    if (demoData.reminderDate) {
+      demoData.reminder = demoData.reminderDate;
+      delete demoData.reminderDate;
+    }
+    const demo = new Demo(demoData);
     await demo.save();
 
     // Find the corresponding enquiry and update its status

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
@@ -7,59 +7,80 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useMediaQuery } from "react-responsive";
 import DemoReminderCard from "../../components/DemoReminderCard";
-
-const demoReminders = [
-  // sample row – you can replace with API data
-  // {
-  //   id: 1,
-  //   name: "Borad Ayushi Ghanshyambhai",
-  //   contact1: "9723540080",
-  //   contact2: "8140180172",
-  //   course: "Digital Marketing - 3M",
-  //   reference: "Happy Bhanderi - SS - REF",
-  //   demoDate: "12/08/2025 03:00 PM",
-  //   status: "Pending",
-  // },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchDemos, cancelDemo } from "../../redux/thunks";
 
 const DemoReminder = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [search, setSearch] = useState("");
+  const { demos, status, error } = useSelector((state) => state.demos);
+
+  useEffect(() => {
+    dispatch(fetchDemos());
+  }, [dispatch]);
+
+  const reminders = useMemo(() => {
+    return demos.filter(
+      (d) =>
+        d.reminder &&
+        d.status !== "Done" &&
+        d.status !== "Cancelled"
+    );
+  }, [demos]);
 
   const handleEditClick = (reminder) => {
-    console.log("Edit reminder:", reminder);
+    navigate(`/demo/edit/${reminder._id}`);
   };
 
   const handleDoneClick = (reminder) => {
     console.log("Mark as done:", reminder);
+    // You might want to dispatch an action to update the status to "Done"
+    // e.g., dispatch(updateDemo({ id: reminder._id, demoData: { status: 'Done' } }));
   };
 
   const handleCancelClick = (reminder) => {
-    console.log("Cancel reminder:", reminder);
+    if (window.confirm("Are you sure you want to cancel this demo?")) {
+      dispatch(cancelDemo(reminder._id));
+    }
   };
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return demoReminders;
+    if (!search.trim()) return reminders;
     const q = search.toLowerCase();
-    return demoReminders.filter((d) =>
+    return reminders.filter((d) =>
       [
-        d.name,
-        d.contact1,
-        d.contact2,
+        d.studentName,
+        d.firstMobile,
+        d.secondMobile,
         d.course,
         d.reference,
-        d.demoDate,
+        d.reminder,
         d.status,
       ]
         .join(" ")
         .toLowerCase()
         .includes(q)
     );
-  }, [search]);
+  }, [search, reminders]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  if (status === "loading") {
+    return <div className="text-center p-4">Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div className="text-center p-4 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -149,8 +170,13 @@ const DemoReminder = () => {
             ) : (
               filtered.map((item) => (
                 <DemoReminderCard
-                  key={item.id}
-                  reminder={item}
+                  key={item._id}
+                  reminder={{
+                    ...item,
+                    name: item.studentName,
+                    contact1: item.firstMobile,
+                    contact2: item.secondMobile,
+                  }}
                   onEdit={handleEditClick}
                   onDone={handleDoneClick}
                   onCancel={handleCancelClick}
@@ -174,7 +200,7 @@ const DemoReminder = () => {
                     "CONTACT",
                     "COURSE",
                     "REFERENCE",
-                    "DEMO DATE",
+                    "REMINDER DATE",
                     "MESSAGE",
                     "STATUS",
                     "ACTIONS",
@@ -199,7 +225,7 @@ const DemoReminder = () => {
               <tbody>
                 {filtered.map((item, index) => (
                   <tr
-                    key={item.id}
+                    key={item._id}
                     className={
                       "border-t transition-colors duration-300 " +
                       (isDark
@@ -224,7 +250,7 @@ const DemoReminder = () => {
                         (isDark ? "text-gray-200" : "text-gray-900")
                       }
                     >
-                      {item.name}
+                      {item.studentName}
                     </td>
 
                     {/* CONTACT */}
@@ -234,8 +260,8 @@ const DemoReminder = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      <div>{item.contact1}</div>
-                      <div>{item.contact2}</div>
+                      <div>{item.firstMobile}</div>
+                      <div>{item.secondMobile}</div>
                     </td>
 
                     {/* COURSE */}
@@ -258,14 +284,14 @@ const DemoReminder = () => {
                       {item.reference}
                     </td>
 
-                    {/* DEMO DATE */}
+                    {/* REMINDER DATE */}
                     <td
                       className={
                         "px-4 py-3 " +
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.demoDate}
+                      {formatDate(item.reminder)}
                     </td>
 
                     {/* MESSAGE icons */}
@@ -304,6 +330,8 @@ const DemoReminder = () => {
                           "inline-block px-3 py-1 rounded-full border text-xs " +
                           (item.status === "Done"
                             ? "border-green-500 text-green-500"
+                            : item.status === "Cancelled"
+                            ? "border-red-500 text-red-500"
                             : "border-yellow-500 text-yellow-500")
                         }
                       >
@@ -363,7 +391,7 @@ const DemoReminder = () => {
           }
         >
           <span>
-            Showing {filtered.length} of {demoReminders.length} entries
+            Showing {filtered.length} of {reminders.length} entries
           </span>
           <div className="flex gap-1 mt-2 md:mt-0">
             <button

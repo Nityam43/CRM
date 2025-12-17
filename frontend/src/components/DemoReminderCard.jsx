@@ -65,9 +65,9 @@ const DemoReminderCard = ({ reminder, onEdit, onDone, onCancel }) => {
               "font-semibold " + (isDark ? "text-gray-400" : "text-gray-600")
             }
           >
-            Demo Date:
+            Reminder Date:
           </span>{" "}
-          {reminder.demoDate}
+          {reminder.reminder}
         </p>
       </div>
       <div className="flex justify-between items-center mt-4">

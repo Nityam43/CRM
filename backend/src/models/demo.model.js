@@ -23,6 +23,9 @@ const demoSchema = new mongoose.Schema({
     time: {
         type: String,
     },
+    reminder: {
+        type: Date,
+    },
     note: {
         type: String,
     },

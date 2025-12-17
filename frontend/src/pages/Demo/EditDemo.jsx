@@ -31,6 +31,7 @@ const EditDemo = () => {
     time: "",
     note: "",
     status: "Demo",
+    reminder: "",
   });
 
   useEffect(() => {
@@ -50,6 +51,9 @@ const EditDemo = () => {
           time: demoData.time || "",
           note: demoData.note || "",
           status: demoData.status || "Demo",
+          reminder: demoData.reminder
+            ? new Date(demoData.reminder).toISOString().split("T")[0]
+            : "",
         });
       } catch (error) {
         console.error("Error fetching demo data", error);
@@ -345,6 +349,30 @@ const EditDemo = () => {
                     (isDark
                       ? "bg-[#1E2331] text-white border-[#2c3250]"
                       : "bg-white text-gray-900 border-gray-300")
+                  }
+                />
+              </div>
+
+              {/* Reminder */}
+              <div>
+                <label
+                  className={
+                    "block text-sm font-medium mb-2 transition-colors duration-300 " +
+                    (isDark ? "text-gray-300" : "text-gray-700")
+                  }
+                >
+                  Reminder:
+                </label>
+                <input
+                  type="date"
+                  name="reminder"
+                  value={formData.reminder}
+                  onChange={handleChange}
+                  className={
+                    "w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-600 transition-colors duration-300 " +
+                    (isDark
+                      ? "bg-[#1E2331] text-gray-300 border-[#2c3250]"
+                      : "bg-white text-gray-800 border-gray-300")
                   }
                 />
               </div>

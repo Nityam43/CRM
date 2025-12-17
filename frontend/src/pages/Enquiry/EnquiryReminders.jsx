@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
@@ -7,41 +7,43 @@ import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useMediaQuery } from "react-responsive";
 import EnquiryReminderCard from "../../components/EnquiryReminderCard";
-
-const reminders = [
-  {
-    id: 1,
-    name: "Joshi Meetkumar",
-    contact1: "9898929866",
-    contact2: "9909854024",
-    course: "Video Editing | Digital Marketing",
-    enquiryDate: "09/10/2025 06:29 AM",
-    reminderDate: "11/10/2025 06:29 AM",
-    reference: "Social Media",
-    status: "Enquiry",
-    rating: 1,
-  },
-  // add more demo rows or leave empty for now
-];
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEnquiries, cancelEnquiry, moveEnquiryToDemo } from "../../redux/thunks";
 
 const EnquiryReminders = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
 
   const [search, setSearch] = useState("");
+  const { enquiries, status, error } = useSelector((state) => state.enquiries);
+
+  useEffect(() => {
+    dispatch(fetchEnquiries());
+  }, [dispatch]);
+
+  const reminders = useMemo(() => {
+    return enquiries.filter(
+      (e) => e.reminderDate && e.status !== "Cancelled" && e.status !== "Moved to Demo"
+    );
+  }, [enquiries]);
 
   const handleEditClick = (reminder) => {
-    console.log("Edit reminder:", reminder);
+    navigate(`/enquiry/edit/${reminder._id}`);
   };
 
   const handleDemoClick = (reminder) => {
-    console.log("Demo for reminder:", reminder);
+    if (window.confirm("Are you sure you want to move this enquiry to a demo?")) {
+      dispatch(moveEnquiryToDemo(reminder));
+    }
   };
 
   const handleCancelClick = (reminder) => {
-    console.log("Cancel reminder:", reminder);
+    if (window.confirm("Are you sure you want to cancel this enquiry?")) {
+      dispatch(cancelEnquiry(reminder._id));
+    }
   };
 
   const filtered = useMemo(() => {
@@ -49,11 +51,11 @@ const EnquiryReminders = () => {
     const q = search.toLowerCase();
     return reminders.filter((e) =>
       [
-        e.name,
-        e.contact1,
-        e.contact2,
-        e.course,
-        e.enquiryDate,
+        e.studentName,
+        e.firstMobile,
+        e.secondMobile,
+        e.education,
+        e.createdAt,
         e.reminderDate,
         e.reference,
         e.status,
@@ -62,7 +64,21 @@ const EnquiryReminders = () => {
         .toLowerCase()
         .includes(q)
     );
-  }, [search]);
+  }, [search, reminders]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+  
+  if (status === "loading") {
+    return <div className="text-center p-4">Loading...</div>;
+  }
+
+  if (status === "failed") {
+    return <div className="text-center p-4 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="flex-1 px-4 sm:px-6 py-6">
@@ -152,8 +168,17 @@ const EnquiryReminders = () => {
             ) : (
               filtered.map((item) => (
                 <EnquiryReminderCard
-                  key={item.id}
-                  reminder={item}
+                  key={item._id}
+                  reminder={{
+                    ...item,
+                    name: item.studentName,
+                    contact1: item.firstMobile,
+                    contact2: item.secondMobile,
+                    course: item.education,
+                    enquiryDate: formatDate(item.createdAt),
+                    reminderDate: formatDate(item.reminderDate),
+                    reference: item.reference,
+                  }}
                   onEdit={handleEditClick}
                   onDemo={handleDemoClick}
                   onCancel={handleCancelClick}
@@ -206,7 +231,7 @@ const EnquiryReminders = () => {
               <tbody>
                 {filtered.map((item, index) => (
                   <tr
-                    key={item.id}
+                    key={item._id}
                     className={
                       "border-t transition-colors duration-300 " +
                       (isDark
@@ -231,7 +256,7 @@ const EnquiryReminders = () => {
                         (isDark ? "text-gray-200" : "text-gray-900")
                       }
                     >
-                      {item.name}
+                      {item.studentName}
                     </td>
 
                     {/* CONTACT */}
@@ -241,8 +266,8 @@ const EnquiryReminders = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      <div>{item.contact1}</div>
-                      <div>{item.contact2}</div>
+                      <div>{item.firstMobile}</div>
+                      <div>{item.secondMobile}</div>
                     </td>
 
                     {/* COURSES */}
@@ -252,7 +277,7 @@ const EnquiryReminders = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.course}
+                      {item.education}
                     </td>
 
                     {/* ENQUIRY DATE */}
@@ -262,7 +287,7 @@ const EnquiryReminders = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.enquiryDate}
+                      {formatDate(item.createdAt)}
                     </td>
 
                     {/* REMINDER DATE */}
@@ -272,7 +297,7 @@ const EnquiryReminders = () => {
                         (isDark ? "text-gray-200" : "text-gray-800")
                       }
                     >
-                      {item.reminderDate}
+                      {formatDate(item.reminderDate)}
                     </td>
 
                     {/* REFERENCE */}
@@ -331,7 +356,7 @@ const EnquiryReminders = () => {
                     {/* RATING */}
                     <td className="px-4 py-3 text-center">
                       <span className="inline-flex items-center justify-center w-7 h-7 rounded border border-red-500 text-red-500 text-xs">
-                        {item.rating}
+                        {item.enquiryRating || 'N/A'}
                       </span>
                     </td>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   ChartBarIcon,
   UsersIcon,
@@ -15,6 +15,8 @@ import api from "../api/axios";
 import { useTheme } from "../ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEnquiries, fetchDemos } from "../redux/thunks";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -24,12 +26,37 @@ const Sidebar = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [enquiryDropdownOpen, setEnquiryDropdownOpen] = useState(false);
   const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
   const [enrollDropdownOpen, setEnrollDropdownOpen] = useState(false);
   const [feesDropdownOpen, setFeesDropdownOpen] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
+
+  const { enquiries } = useSelector((state) => state.enquiries);
+  const { demos } = useSelector((state) => state.demos);
+
+  useEffect(() => {
+    dispatch(fetchEnquiries());
+    dispatch(fetchDemos());
+  }, [dispatch]);
+
+  const reminderCount = useMemo(() => {
+    return enquiries.filter(
+      (e) =>
+        e.reminderDate &&
+        e.status !== "Cancelled" &&
+        e.status !== "Moved to Demo"
+    ).length;
+  }, [enquiries]);
+
+  const demoReminderCount = useMemo(() => {
+    return demos.filter(
+      (d) =>
+        d.reminder && d.status !== "Done" && d.status !== "Cancelled"
+    ).length;
+  }, [demos]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -452,10 +479,10 @@ const Sidebar = ({
                   className={
                     "w-full flex items-center px-3 py-2 rounded transition text-sm " +
                     (isActive(option.path)
-                      ? "bg-blue-600 text-white"
-                      : isDark
-                      ? "hover:bg-[#232941] text-gray-300"
-                      : "hover:bg-white text-gray-800")
+                        ? "bg-blue-600 text-white"
+                        : isDark
+                        ? "hover:bg-[#232941] text-gray-300"
+                        : "hover:bg-white text-gray-800")
                   }
                 >
                   <span className="whitespace-nowrap">{option.label}</span>
@@ -483,7 +510,7 @@ const Sidebar = ({
               <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
                 <FontAwesomeIcon icon={faBell} />
                 <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
-                  0
+                  {reminderCount}
                 </span>
               </span>
 
@@ -498,7 +525,7 @@ const Sidebar = ({
               <span className="relative inline-flex h-6 w-6 items-center justify-center">
                 <FontAwesomeIcon icon={faBell} />
                 <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
-                  0
+                  {reminderCount}
                 </span>
               </span>
             </button>
@@ -523,7 +550,7 @@ const Sidebar = ({
               <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
                 <FontAwesomeIcon icon={faBell} />
                 <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
-                  0
+                  {demoReminderCount}
                 </span>
               </span>
               <span className="ml-2">Demo</span>
@@ -537,7 +564,7 @@ const Sidebar = ({
               <span className="relative inline-flex h-6 w-6 items-center justify-center">
                 <FontAwesomeIcon icon={faBell} />
                 <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
-                  0
+                  {demoReminderCount}
                 </span>
               </span>
             </button>
