@@ -13,6 +13,7 @@ import {
   fetchDemos,
   fetchFees,
 } from "../redux/thunks";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { theme } = useTheme();
@@ -63,223 +64,237 @@ const Dashboard = () => {
       {/* Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {/* Enquiries */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <ClipboardIcon
+        <Link to="/enquiry/list">
+          <div
             className={
-              "h-10 w-10 mr-4 " + (isDark ? "text-blue-400" : "text-blue-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <ClipboardIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " + (isDark ? "text-blue-400" : "text-blue-600")
               }
-            >
-              {enquiredCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Enquiries
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {enquiredCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Enquiries
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Cancelled Enquiries */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <ClipboardIcon
+        <Link to="/enquiry/cancel">
+          <div
             className={
-              "h-10 w-10 mr-4 " + (isDark ? "text-red-400" : "text-red-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <ClipboardIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " + (isDark ? "text-red-400" : "text-red-600")
               }
-            >
-              {cancelledEnquiryCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Cancelled Enquiries
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {cancelledEnquiryCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Cancelled Enquiries
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Demos */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <UsersIcon
+        <Link to="/demo/list">
+          <div
             className={
-              "h-10 w-10 mr-4 " + (isDark ? "text-green-400" : "text-green-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <UsersIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " + (isDark ? "text-green-400" : "text-green-600")
               }
-            >
-              {demoCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Demos
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {demoCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Demos
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Cancelled Demos */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <UsersIcon
+        <Link to="/demo/cancel">
+          <div
             className={
-              "h-10 w-10 mr-4 " + (isDark ? "text-red-400" : "text-red-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <UsersIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " + (isDark ? "text-red-400" : "text-red-600")
               }
-            >
-              {cancelledDemoCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Cancelled Demos
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {cancelledDemoCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Cancelled Demos
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Enrolls */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <ChartBarIcon
+        <Link to="/enroll/list">
+          <div
             className={
-              "h-10 w-10 mr-4 " +
-              (isDark ? "text-purple-400" : "text-purple-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <ChartBarIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " +
+                (isDark ? "text-purple-400" : "text-purple-600")
               }
-            >
-              {enrolledCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Enrolls
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {enrolledCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Enrolls
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
 
         {/* Cancelled Enrolls */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <ChartBarIcon
+        <Link to="/enroll/cancel">
+          <div
             className={
-              "h-10 w-10 mr-4 " + (isDark ? "text-red-400" : "text-red-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <ChartBarIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " + (isDark ? "text-red-400" : "text-red-600")
               }
-            >
-              {cancelledEnrollCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Cancelled Enrolls
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {cancelledEnrollCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Cancelled Enrolls
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
         
         {/* Fees */}
-        <div
-          className={
-            "rounded-xl px-6 py-4 flex items-center shadow " +
-            (isDark ? "bg-[#232941]" : "bg-white")
-          }
-        >
-          <BanknotesIcon
+        <Link to="/fees/list">
+          <div
             className={
-              "h-10 w-10 mr-4 " +
-              (isDark ? "text-yellow-400" : "text-yellow-600")
+              "rounded-xl px-6 py-4 flex items-center shadow " +
+              (isDark ? "bg-[#232941]" : "bg-white")
             }
-          />
-          <div>
-            <p
+          >
+            <BanknotesIcon
               className={
-                "text-lg font-semibold " +
-                (isDark ? "text-white" : "text-gray-900")
+                "h-10 w-10 mr-4 " +
+                (isDark ? "text-yellow-400" : "text-yellow-600")
               }
-            >
-              {feesCount}
-            </p>
-            <p
-              className={
-                "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
-              }
-            >
-              Fees
-            </p>
+            />
+            <div>
+              <p
+                className={
+                  "text-lg font-semibold " +
+                  (isDark ? "text-white" : "text-gray-900")
+                }
+              >
+                {feesCount}
+              </p>
+              <p
+                className={
+                  "text-xs " + (isDark ? "text-gray-400" : "text-gray-500")
+                }
+              >
+                Fees
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );
