@@ -4,8 +4,8 @@ async function getUserController(req, res) {
   try {
     const user = await userModel.findById(req.userId).select("-password");
     if (!user) {
-      return res.status(404).json({
-        message: "User not found",
+      return res.status(401).json({
+        message: "User not found or token invalid.",
       });
     }
     res.status(200).json({
