@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ArrowLeftIcon, CurrencyRupeeIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
@@ -131,7 +131,24 @@ const FeesList = () => {
                 No data available
               </p>
             ) : (
-              filteredData.map((item) => <FeesCard key={item._id} fee={item} onAction={() => handleAction(item.enrollNo)} onReceipt={() => handleReceipt(item.enrollNo)} onPayments={() => handlePaymentsHistory(item.enrollNo)} />)
+              filteredData.map((item) => {
+                const totalFees = item.totalFees || 0;
+                const gstAmount = (totalFees * 18) / 118;
+                const sgst = gstAmount / 2;
+                const cgst = gstAmount / 2;
+
+                return (
+                  <FeesCard
+                    key={item._id}
+                    fee={item}
+                    sgst={sgst}
+                    cgst={cgst}
+                    onAction={() => handleAction(item.enrollNo)}
+                    onReceipt={() => handleReceipt(item.enrollNo)}
+                    onPayments={() => handlePaymentsHistory(item.enrollNo)}
+                  />
+                );
+              })
             )}
           </div>
         ) : (
@@ -149,6 +166,8 @@ const FeesList = () => {
                     "STUDENT NAME",
                     "COURSE",
                     "TOTAL FEES",
+                    "SGST",
+                    "CGST",
                     "PAID FEES",
                     "PENDING FEES",
                     "STATUS",
@@ -186,47 +205,73 @@ const FeesList = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredData.map((item) => (
-                    <tr
-                      key={item._id}
-                      className={
-                        "border-t transition-colors duration-300 " +
-                        (isDark
-                          ? "border-[#2c3250] hover:bg-[#1E2331]"
-                          : "border-gray-200 hover:bg-gray-50")
-                      }
-                    >
-                      <td className="px-4 py-2">{item.enrollNo}</td>
-                      <td className="px-4 py-2">{item.studentName}</td>
-                      <td className="px-4 py-2">{item.course}</td>
-                      <td className="px-4 py-2">{item.totalFees}</td>
-                      <td className="px-4 py-2">{item.paidFees}</td>
-                      <td className="px-4 py-2">{item.pendingFees}</td>
-                      <td className="px-4 py-2">
-                        <span className={`px-2 py-1 text-xs rounded-full ${
-                            item.pendingFees <= 0 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                        }`}>
-                            {item.pendingFees <= 0 ? 'Paid' : 'Pending'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">
-                        <div className="flex items-center">
-                          <button onClick={() => handleAction(item.enrollNo)} className="text-blue-500 hover:text-blue-700 flex items-center">
-                            <CurrencyRupeeIcon className="h-5 w-5 mr-1" />
-                            Pay
+                  filteredData.map((item) => {
+                    const totalFees = item.totalFees || 0;
+                    const paidFees = item.paidFees || 0;
+                    const pendingFees = item.pendingFees || 0;
+                    const gstAmount = (totalFees * 18) / 118;
+                    const sgst = gstAmount / 2;
+                    const cgst = gstAmount / 2;
+
+                    return (
+                      <tr
+                        key={item._id}
+                        className={
+                          "border-t transition-colors duration-300 " +
+                          (isDark
+                            ? "border-[#2c3250] hover:bg-[#1E2331]"
+                            : "border-gray-200 hover:bg-gray-50")
+                        }
+                      >
+                        <td className="px-4 py-2">{item.enrollNo}</td>
+                        <td className="px-4 py-2">{item.studentName}</td>
+                        <td className="px-4 py-2">{item.course}</td>
+                        <td className="px-4 py-2">{totalFees.toFixed(2)}</td>
+                        <td className="px-4 py-2">{sgst.toFixed(2)}</td>
+                        <td className="px-4 py-2">{cgst.toFixed(2)}</td>
+                        <td className="px-4 py-2">{paidFees.toFixed(2)}</td>
+                        <td className="px-4 py-2">{pendingFees.toFixed(2)}</td>
+                        <td className="px-4 py-2">
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              pendingFees <= 0
+                                ? "bg-green-500/20 text-green-400"
+                                : "bg-yellow-500/20 text-yellow-400"
+                            }`}
+                          >
+                            {pendingFees <= 0 ? "Paid" : "Pending"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex items-center">
+                            <button
+                              onClick={() => handleAction(item.enrollNo)}
+                              className="text-blue-500 hover:text-blue-700 flex items-center"
+                            >
+                              <CurrencyRupeeIcon className="h-5 w-5 mr-1" />
+                              Pay
+                            </button>
+                            <button
+                              onClick={() => handleReceipt(item.enrollNo)}
+                              className="ml-4 text-green-500 hover:text-green-700 flex items-center"
+                            >
+                              Receipt
+                            </button>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2">
+                          <button
+                            onClick={() =>
+                              handlePaymentsHistory(item.enrollNo)
+                            }
+                            className="text-purple-500 hover:text-purple-700 flex items-center"
+                          >
+                            Payments
                           </button>
-                          <button onClick={() => handleReceipt(item.enrollNo)} className="ml-4 text-green-500 hover:text-green-700 flex items-center">
-                            Receipt
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2">
-                        <button onClick={() => handlePaymentsHistory(item.enrollNo)} className="text-purple-500 hover:text-purple-700 flex items-center">
-                          Payments
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

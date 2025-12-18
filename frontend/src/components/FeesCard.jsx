@@ -1,7 +1,7 @@
 import { CurrencyRupeeIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../ThemeContext";
 
-const FeesCard = ({ fee, onAction, onReceipt, onPayments }) => { // fee is an enrollment object
+const FeesCard = ({ fee, sgst, cgst, onAction, onReceipt, onPayments }) => { // fee is an enrollment object
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -49,7 +49,27 @@ const FeesCard = ({ fee, onAction, onReceipt, onPayments }) => { // fee is an en
           >
             Total Fees:
           </span>{" "}
-          {fee.totalFees}
+          {(fee.totalFees || 0).toFixed(2)}
+        </p>
+        <p>
+          <span
+            className={
+              "font-semibold " + (isDark ? "text-gray-400" : "text-gray-600")
+            }
+          >
+            SGST:
+          </span>{" "}
+          {sgst.toFixed(2)}
+        </p>
+        <p>
+          <span
+            className={
+              "font-semibold " + (isDark ? "text-gray-400" : "text-gray-600")
+            }
+          >
+            CGST:
+          </span>{" "}
+          {cgst.toFixed(2)}
         </p>
         <p>
           <span
@@ -59,7 +79,7 @@ const FeesCard = ({ fee, onAction, onReceipt, onPayments }) => { // fee is an en
           >
             Paid Fees:
           </span>{" "}
-          {fee.paidFees}
+          {(fee.paidFees || 0).toFixed(2)}
         </p>
         <p>
           <span
@@ -69,7 +89,7 @@ const FeesCard = ({ fee, onAction, onReceipt, onPayments }) => { // fee is an en
           >
             Pending Fees:
           </span>{" "}
-          {fee.pendingFees}
+          {(fee.pendingFees || 0).toFixed(2)}
         </p>
       </div>
       <div className="flex justify-end items-center mt-4 gap-2">
