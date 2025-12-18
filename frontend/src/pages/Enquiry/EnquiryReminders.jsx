@@ -8,7 +8,11 @@ import { faCommentDots, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { useMediaQuery } from "react-responsive";
 import EnquiryReminderCard from "../../components/EnquiryReminderCard";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEnquiries, cancelEnquiry, moveEnquiryToDemo } from "../../redux/thunks";
+import {
+  fetchEnquiries,
+  cancelEnquiry,
+  moveEnquiryToDemo,
+} from "../../redux/thunks";
 
 const EnquiryReminders = () => {
   const navigate = useNavigate();
@@ -25,9 +29,7 @@ const EnquiryReminders = () => {
   }, [dispatch]);
 
   const reminders = useMemo(() => {
-    return enquiries.filter(
-      (e) => e.reminderDate && e.status !== "Cancelled" && e.status !== "Moved to Demo"
-    );
+    return enquiries.filter((e) => e.reminderDate && e.status !== "Cancelled");
   }, [enquiries]);
 
   const handleEditClick = (reminder) => {
@@ -35,7 +37,9 @@ const EnquiryReminders = () => {
   };
 
   const handleDemoClick = (reminder) => {
-    if (window.confirm("Are you sure you want to move this enquiry to a demo?")) {
+    if (
+      window.confirm("Are you sure you want to move this enquiry to a demo?")
+    ) {
       dispatch(moveEnquiryToDemo(reminder));
     }
   };
@@ -71,7 +75,7 @@ const EnquiryReminders = () => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-  
+
   if (status === "loading") {
     return <div className="text-center p-4">Loading...</div>;
   }
@@ -213,9 +217,7 @@ const EnquiryReminders = () => {
                       key={h}
                       className={
                         "px-4 py-3 font-semibold " +
-                        (["MESSAGE", "STATUS", "RATINGS", "ACTIONS"].includes(
-                          h
-                        )
+                        (["MESSAGE", "STATUS", "RATINGS", "ACTIONS"].includes(h)
                           ? "text-center"
                           : "text-left") +
                         " " +
@@ -356,7 +358,7 @@ const EnquiryReminders = () => {
                     {/* RATING */}
                     <td className="px-4 py-3 text-center">
                       <span className="inline-flex items-center justify-center w-7 h-7 rounded border border-red-500 text-red-500 text-xs">
-                        {item.enquiryRating || 'N/A'}
+                        {item.enquiryRating || "N/A"}
                       </span>
                     </td>
 

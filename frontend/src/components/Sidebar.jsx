@@ -43,18 +43,13 @@ const Sidebar = ({
   }, [dispatch]);
 
   const reminderCount = useMemo(() => {
-    return enquiries.filter(
-      (e) =>
-        e.reminderDate &&
-        e.status !== "Cancelled" &&
-        e.status !== "Moved to Demo"
-    ).length;
+    return enquiries.filter((e) => e.reminderDate && e.status !== "Cancelled")
+      .length;
   }, [enquiries]);
 
   const demoReminderCount = useMemo(() => {
     return demos.filter(
-      (d) =>
-        d.reminder && d.status !== "Done" && d.status !== "Cancelled"
+      (d) => d.reminder && d.status !== "Done" && d.status !== "Cancelled"
     ).length;
   }, [demos]);
 
@@ -95,20 +90,24 @@ const Sidebar = ({
     { label: "Fees Pay", path: "/fees/pay" },
   ];
 
-
-
   return (
     <aside
       onMouseEnter={() => window.innerWidth > 768 && setIsExpanded(true)}
-      onMouseLeave={() => window.innerWidth > 768 && !isSidebarOpen && setIsExpanded(false)}
+      onMouseLeave={() =>
+        window.innerWidth > 768 && !isSidebarOpen && setIsExpanded(false)
+      }
       className={`
         fixed md:fixed left-0 z-30 h-full
         flex flex-col p-4 overflow-y-auto overflow-x-hidden
         w-64 transition-all duration-300 ease-in-out
-        ${isDark ? "bg-[#151824] text-gray-200" : "bg-white text-gray-900 border-r border-gray-200"}
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        ${
+          isDark
+            ? "bg-[#151824] text-gray-200"
+            : "bg-white text-gray-900 border-r border-gray-200"
+        }
+        ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         md:translate-x-0
-        ${isExpanded ? 'md:w-64' : 'md:w-20'}
+        ${isExpanded ? "md:w-64" : "md:w-20"}
       `}
     >
       {/* Logo / title */}
@@ -479,10 +478,10 @@ const Sidebar = ({
                   className={
                     "w-full flex items-center px-3 py-2 rounded transition text-sm " +
                     (isActive(option.path)
-                        ? "bg-blue-600 text-white"
-                        : isDark
-                        ? "hover:bg-[#232941] text-gray-300"
-                        : "hover:bg-white text-gray-800")
+                      ? "bg-blue-600 text-white"
+                      : isDark
+                      ? "hover:bg-[#232941] text-gray-300"
+                      : "hover:bg-white text-gray-800")
                   }
                 >
                   <span className="whitespace-nowrap">{option.label}</span>
