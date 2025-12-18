@@ -8,7 +8,11 @@ import { useTheme } from "../../ThemeContext";
 import EnquiryCard from "../../components/EnquiryCard";
 import { useMediaQuery } from "react-responsive";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEnquiries, cancelEnquiry, moveEnquiryToDemo } from "../../redux/thunks";
+import {
+  fetchEnquiries,
+  cancelEnquiry,
+  moveEnquiryToDemo,
+} from "../../redux/thunks";
 
 const EnquiryList = () => {
   const navigate = useNavigate();
@@ -47,9 +51,8 @@ const EnquiryList = () => {
   };
 
   const filteredEnquiries = useMemo(() => {
-    const activeEnquiries = enquiries.filter(
-      (e) => e.status !== "Cancelled" && e.status !== "Moved to Demo"
-    );
+    // Show all enquiries except cancelled ones. Keep items moved to demo visible.
+    const activeEnquiries = enquiries.filter((e) => e.status !== "Cancelled");
     if (!search.trim()) return activeEnquiries;
     const q = search.toLowerCase();
     return activeEnquiries.filter((e) =>
@@ -77,7 +80,7 @@ const EnquiryList = () => {
     return isNaN(d.getTime()) ? "-" : d.toLocaleDateString();
   };
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className={isDark ? "text-white" : "text-gray-900"}>Loading...</p>
@@ -85,7 +88,7 @@ const EnquiryList = () => {
     );
   }
 
-  if (status === 'failed') {
+  if (status === "failed") {
     return (
       <div className="flex-1 px-6 py-6 text-center">
         <p className="text-red-500">Error: {error}</p>
@@ -176,7 +179,6 @@ const EnquiryList = () => {
                 onEdit={handleEditClick}
                 onCancel={handleCancelClick}
                 onDemo={handleDemoClick}
-
               />
             ))}
           </div>
