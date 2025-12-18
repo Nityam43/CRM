@@ -84,7 +84,7 @@ const createEnrollment = async (req, res) => {
     }
 
     const courseFees = Number(req.body.courseFees) || 0;
-    const totalFeesWithGST = courseFees * 1.18;
+    const totalFeesWithGST = courseFees;
 
     // 2. Create and save the new enrollment
     const newEnrollment = new Enroll({
@@ -132,7 +132,7 @@ const updateEnrollment = async (req, res) => {
       let newTotalFees;
       if (updateData.courseFees !== undefined) {
         const courseFees = Number(updateData.courseFees) || 0;
-        newTotalFees = courseFees * 1.18;
+        newTotalFees = courseFees;
         updateData.totalFees = newTotalFees;
       } else {
         newTotalFees = Number(updateData.totalFees);
