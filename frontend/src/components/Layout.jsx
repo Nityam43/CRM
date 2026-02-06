@@ -1,21 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Sidebar from "./Sidebar";
 import { useTheme } from "../ThemeContext";
 import { Bars3Icon } from "@heroicons/react/24/outline";
+import PageTransition from "./PageTransition";
 
 const Layout = ({ children }) => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHoverExpanded, setIsHoverExpanded] = useState(false);
 
-  useEffect(() => {
-    if (isSidebarOpen) {
-      setIsExpanded(true);
-    } else {
-      setIsExpanded(false);
-    }
-  }, [isSidebarOpen]);
+  // Derived state: Expanded if pinned open OR hovered
+  const isExpanded = isSidebarOpen || isHoverExpanded;
 
   return (
     <div
@@ -28,7 +24,7 @@ const Layout = ({ children }) => {
         isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
         isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
+        setIsExpanded={setIsHoverExpanded}
       />
 
       {isSidebarOpen && (
@@ -42,7 +38,7 @@ const Layout = ({ children }) => {
       {isExpanded && !isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/30 backdrop-blur-sm z-20 hidden md:block"
-          onClick={() => setIsExpanded(false)}
+          onClick={() => setIsHoverExpanded(false)}
         ></div>
       )}
 
@@ -73,7 +69,9 @@ const Layout = ({ children }) => {
           </div>
         </div>
 
-        <main className="flex-1 px-6 py-4 overflow-auto">{children}</main>
+        <main className="flex-1 px-6 py-4 overflow-auto">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   );

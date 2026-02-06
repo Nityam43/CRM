@@ -1,0 +1,95 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\ThemeContext.jsx
+  28:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\components\Layout.jsx
+   7:45  error  'useState' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-undef
+   8:39  error  'useState' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-undef
+  10:3   error  'useEffect' is not defined                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-undef
+  12:7   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  10 |   useEffect(() => {
+  11 |     if (isSidebarOpen) {
+> 12 |       setIsExpanded(true);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  13 |     } else {
+  14 |       setIsExpanded(false);
+  15 |     }  react-hooks/set-state-in-effect
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\components\PageTransition.jsx
+  1:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\components\ProtectedRoute.jsx
+  15:16  error  'error' is defined but never used  no-unused-vars
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\pages\Enroll\AddEnrollment.jsx
+  38:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  36 |     useEffect(() => {
+  37 |         if (sourceData) {
+> 38 |             setFormData(prev => ({
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |                 ...prev,
+  40 |                 studentName: sourceData.studentName || "",
+  41 |                 email: sourceData.email || "",  react-hooks/set-state-in-effect
+  66:19  error  'res' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\pages\Fees\FeesReceipt.jsx
+  28:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  26 |     if (enrolls.length > 0) {
+  27 |       const selectedEnrollment = enrolls.find((e) => e.enrollNo === enrollNo);
+> 28 |       setEnrollment(selectedEnrollment);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  29 |     }
+  30 |   }, [enrolls, enrollNo]);
+  31 |  react-hooks/set-state-in-effect
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\pages\Fees\PaymentHistory.jsx
+  27:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  25 |     if (enrolls.length > 0) {
+  26 |       const selectedEnrollment = enrolls.find((e) => e.enrollNo === enrollNo);
+> 27 |       setEnrollment(selectedEnrollment);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |     }
+  29 |   }, [enrolls, enrollNo]);
+  30 |  react-hooks/set-state-in-effect
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\pages\UsersList.jsx
+  1:10  error  'useState' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+E:\Sheryians Coding School\Projects\CRM\frontend\src\redux\slices\feesSlice.js
+  28:15  error  'updatedEnrollment' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  32:15  error  'updatedEnrollment' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+✖ 14 problems (14 errors, 0 warnings)
+

@@ -23,14 +23,6 @@ const feesSlice = createSlice({
       .addCase(fetchFees.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      })
-      .addCase(addFee.fulfilled, (state, action) => {
-        const updatedEnrollment = action.payload;
-        // Logic to update fees based on the updated enrollment
-      })
-      .addCase(deleteFee.fulfilled, (state, action) => {
-        const updatedEnrollment = action.payload;
-        // Logic to update fees based on the updated enrollment
       });
   },
 });

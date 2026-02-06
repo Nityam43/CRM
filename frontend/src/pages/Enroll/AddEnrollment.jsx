@@ -13,30 +13,9 @@ const AddEnrollment = () => {
     // The demo or enquiry data is passed in the location state
     const sourceData = location.state?.item;
 
-    const [formData, setFormData] = useState({
-        // Pre-filled data from demo/enquiry
-        studentName: "",
-        email: "",
-        firstMobile: "",
-        secondMobile: "",
-        course: "",
-        reference: "",
-        counsellor: "",
-        // New data for enrollment
-        courseFees: "",
-        teacherName: "",
-        time: "",
-        placementStatus: "Pending",
-        // IDs to link back
-        demoId: null,
-        enquiryId: null,
-    });
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
+    const [formData, setFormData] = useState(() => {
         if (sourceData) {
-            setFormData(prev => ({
-                ...prev,
+            return {
                 studentName: sourceData.studentName || "",
                 email: sourceData.email || "",
                 firstMobile: sourceData.firstMobile || "",
@@ -45,14 +24,29 @@ const AddEnrollment = () => {
                 reference: sourceData.reference || "",
                 counsellor: sourceData.counsellor || "",
                 time: sourceData.time || "",
-                // Check if it's a demo or enquiry to set the correct ID
+                courseFees: "",
+                teacherName: "",
+                placementStatus: "Pending",
                 demoId: sourceData.status === 'Demo' ? sourceData._id : null,
                 enquiryId: sourceData.status === 'Enquiry' ? sourceData._id : null,
-            }));
-        } else {
-            console.error("No source data provided for enrollment.");
+            };
         }
-    }, [sourceData, setFormData]);
+        return {
+            studentName: "",
+            email: "",
+            firstMobile: "",
+            secondMobile: "",
+            course: "",
+            reference: "",
+            counsellor: "",
+            courseFees: "",
+            teacherName: "",
+            time: "",
+            placementStatus: "Pending",
+            demoId: null,
+            enquiryId: null,
+        };
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -63,7 +57,7 @@ const AddEnrollment = () => {
         e.preventDefault();
         setError(null); // Reset error before submission
         try {
-            const res = await api.post("/enroll", formData);
+            await api.post("/enroll", formData);
             navigate("/enroll/list"); // Navigate to the enroll list after success
         } catch (err) {
             if (err.response?.status === 409) {

@@ -13,6 +13,7 @@ const ProtectedRoute = ({ children }) => {
         await api.get("/user/me");
         setIsAuthenticated(true);
       } catch (error) {
+        console.error("Auth check failed", error);
         setIsAuthenticated(false);
       } finally {
         setLoading(false);

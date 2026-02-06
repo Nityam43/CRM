@@ -1,4 +1,6 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import PageTransition from "../components/PageTransition";
 import Signup from "../components/Signup";
 import Login from "../components/Login";
 import Dashboard from "../pages/Dashboard";
@@ -25,10 +27,12 @@ import DemoReminder from "../pages/Demo/DemoReminder";
 import AddEnrollment from "../pages/Enroll/AddEnrollment";
 
 const Mainroutes = () => {
+  const location = useLocation();
   return (
-    <Routes>
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+      <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+      <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
 
       {/* Protected routes with Layout/Sidebar */}
       <Route
@@ -243,7 +247,8 @@ const Mainroutes = () => {
       />
 
       <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+      </Routes>
+    </AnimatePresence>
   );
 };
 

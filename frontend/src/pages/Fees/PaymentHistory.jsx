@@ -13,20 +13,13 @@ const PaymentHistory = () => {
   const isDark = theme === "dark";
 
   const { enrolls, status } = useSelector((state) => state.enrolls);
-  const [enrollment, setEnrollment] = useState(null);
+  const enrollment = enrolls.find((e) => e.enrollNo === enrollNo) || null;
 
   useEffect(() => {
     if (enrolls.length === 0) {
       dispatch(fetchEnrolls());
     }
   }, [dispatch, enrolls.length]);
-
-  useEffect(() => {
-    if (enrolls.length > 0) {
-      const selectedEnrollment = enrolls.find((e) => e.enrollNo === enrollNo);
-      setEnrollment(selectedEnrollment);
-    }
-  }, [enrolls, enrollNo]);
 
   if (status === "loading") {
     return (

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { useTheme } from "../ThemeContext";
 import UserCard from "../components/UserCard";
