@@ -32,6 +32,7 @@ const FeesPay = () => {
   // State for editing total fees
   const [isEditingFees, setIsEditingFees] = useState(false);
   const [newTotalFees, setNewTotalFees] = useState("");
+  const [newPendingFees, setNewPendingFees] = useState("");
   const [feeEditLoading, setFeeEditLoading] = useState(false);
 
   const performSearch = async (searchEnrollNo) => {
@@ -44,6 +45,7 @@ const FeesPay = () => {
       setEnrollment(response.data);
       setNote(response.data.note || "");
       setNewTotalFees(response.data.totalFees);
+      setNewPendingFees(response.data.pendingFees);
     } catch (err) {
       setError("Enrollment not found");
       console.error(err);
@@ -123,6 +125,27 @@ const FeesPay = () => {
   const handleFeeEditCancel = () => {
     setIsEditingFees(false);
     setNewTotalFees(enrollment.totalFees);
+    setNewPendingFees(enrollment.pendingFees);
+  };
+
+  const handleEditClick = () => {
+    setIsEditingFees(true);
+    setNewTotalFees(enrollment.totalFees);
+    setNewPendingFees(enrollment.pendingFees);
+  };
+
+  const handleTotalFeeChange = (e) => {
+    const val = e.target.value;
+    setNewTotalFees(val);
+    const paid = Number(enrollment.paidFees) || 0;
+    setNewPendingFees((Number(val) || 0) - paid);
+  };
+
+  const handlePendingFeeChange = (e) => {
+    const val = e.target.value;
+    setNewPendingFees(val);
+    const paid = Number(enrollment.paidFees) || 0;
+    setNewTotalFees((Number(val) || 0) + paid);
   };
 
   const handleDeletePayment = async (paymentId) => {
@@ -385,7 +408,7 @@ const FeesPay = () => {
                   Fees Status
                 </p>
                 {!isEditingFees && (
-                  <button onClick={() => setIsEditingFees(true)} className={"text-sm flex items-center " + (isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-800")}>
+                  <button onClick={handleEditClick} className={"text-sm flex items-center " + (isDark ? "text-blue-400 hover:text-blue-300" : "text-blue-600 hover:text-blue-800")}>
                     <PencilIcon className="h-4 w-4 mr-1" />
                     Edit
                   </button>
@@ -419,7 +442,7 @@ const FeesPay = () => {
                             <input
                             type="number"
                             value={newTotalFees}
-                            onChange={(e) => setNewTotalFees(e.target.value)}
+                            onChange={handleTotalFeeChange}
                             className={"w-24 px-2 py-1 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")}
                             />
                         ) : (
@@ -428,10 +451,16 @@ const FeesPay = () => {
                       </td>
                       <td className="py-2 px-4">{enrollment.paidFees}</td>
                       <td className="py-2 px-4">
-                        {isEditingFees
-                            ? (Number(newTotalFees) || 0) - (enrollment.paidFees || 0)
-                            : enrollment.pendingFees
-                        }
+                        {isEditingFees ? (
+                            <input
+                            type="number"
+                            value={newPendingFees}
+                            onChange={handlePendingFeeChange}
+                            className={"w-24 px-2 py-1 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")}
+                            />
+                        ) : (
+                             enrollment.pendingFees
+                        )}
                         </td>
                     </tr>
                     <tr className="border-t border-[#2c3250]">
@@ -441,7 +470,7 @@ const FeesPay = () => {
                             <input
                             type="number"
                             value={newTotalFees}
-                            onChange={(e) => setNewTotalFees(e.target.value)}
+                            onChange={handleTotalFeeChange}
                             className={"w-24 px-2 py-1 rounded-md border text-sm " + (isDark ? "bg-[#1E2331] border-[#2c3250] text-gray-200" : "bg-white border-gray-300 text-gray-900")}
                             />
                         ) : (
@@ -453,7 +482,7 @@ const FeesPay = () => {
                       </td>
                       <td className="py-2 px-4 font-semibold">
                         {isEditingFees
-                            ? (Number(newTotalFees) || 0) - (enrollment.paidFees || 0)
+                            ? newPendingFees
                             : enrollment.pendingFees
                         }
                       </td>
@@ -692,6 +721,7 @@ const FeesPay = () => {
                         ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
                         : "bg-white border-gray-300 text-gray-900")
                     }
+                    onClick={(e) => e.target.showPicker()}
                   />
                 </div>
                 <div>
@@ -712,6 +742,7 @@ const FeesPay = () => {
                         ? "bg-[#1E2331] border-[#2c3250] text-gray-200"
                         : "bg-white border-gray-300 text-gray-900")
                     }
+                    onClick={(e) => e.target.showPicker()}
                   />
                 </div>
 

@@ -288,6 +288,7 @@ const EditEnquiry = () => {
                       ? "bg-[#1E2331] text-gray-300 border-[#2c3250]"
                       : "bg-white text-gray-800 border-gray-300")
                   }
+                  onClick={(e) => e.target.showPicker()}
                 />
               </div>
 
@@ -392,6 +393,7 @@ const EditEnquiry = () => {
                       ? "bg-[#1E2331] text-gray-300 border-[#2c3250]"
                       : "bg-white text-gray-800 border-gray-300")
                   }
+                  onClick={(e) => e.target.showPicker()}
                 />
               </div>
 
@@ -416,6 +418,7 @@ const EditEnquiry = () => {
                       ? "bg-[#1E2331] text-gray-300 border-[#2c3250]"
                       : "bg-white text-gray-800 border-gray-300")
                   }
+                  onClick={(e) => e.target.showPicker()}
                 />
               </div>
 
@@ -702,6 +705,7 @@ const EditEnquiry = () => {
                         ? "bg-[#1E2331] text-gray-300 border-[#2c3250]"
                         : "bg-white text-gray-800 border-gray-300")
                     }
+                    onClick={(e) => e.target.showPicker()}
                   />
                 </div>
 
