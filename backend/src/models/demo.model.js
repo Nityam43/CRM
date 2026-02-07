@@ -55,6 +55,10 @@ const demoSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Enquiry',
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 const Demo = mongoose.model('Demo', demoSchema);

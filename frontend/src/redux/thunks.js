@@ -38,6 +38,26 @@ export const moveEnquiryToDemo = createAsyncThunk('enquiries/moveEnquiryToDemo',
   return { newDemo: response.data.data, originalEnquiryId: enquiry._id };
 });
 
+export const fetchDeletedEnquiries = createAsyncThunk('enquiries/fetchDeletedEnquiries', async () => {
+    const response = await api.get('/enquiry/deleted/all');
+    return response.data;
+});
+
+export const restoreEnquiry = createAsyncThunk('enquiries/restoreEnquiry', async (id) => {
+    const response = await api.put(`/enquiry/restore/${id}`);
+    return response.data;
+});
+
+export const permanentDeleteEnquiry = createAsyncThunk('enquiries/permanentDeleteEnquiry', async (id) => {
+    await api.delete(`/enquiry/force/${id}`);
+    return id;
+});
+
+export const restoreCancelledEnquiry = createAsyncThunk('enquiries/restoreCancelledEnquiry', async (id) => {
+    const response = await api.patch(`/enquiry/restore-cancelled/${id}`);
+    return response.data;
+});
+
 // Demo Thunks
 export const fetchDemos = createAsyncThunk('demos/fetchDemos', async () => {
     const response = await api.get('/demo');
@@ -46,6 +66,26 @@ export const fetchDemos = createAsyncThunk('demos/fetchDemos', async () => {
 
 export const addDemo = createAsyncThunk('demos/addDemo', async (demoData) => {
     const response = await api.post('/demo', demoData);
+    return response.data;
+});
+
+export const fetchDeletedDemos = createAsyncThunk('demos/fetchDeletedDemos', async () => {
+    const response = await api.get('/demo/deleted/all');
+    return response.data;
+});
+
+export const restoreDemo = createAsyncThunk('demos/restoreDemo', async (id) => {
+    const response = await api.put(`/demo/restore/${id}`);
+    return response.data;
+});
+
+export const permanentDeleteDemo = createAsyncThunk('demos/permanentDeleteDemo', async (id) => {
+    await api.delete(`/demo/force/${id}`);
+    return id;
+});
+
+export const restoreCancelledDemo = createAsyncThunk('demos/restoreCancelledDemo', async (id) => {
+    const response = await api.patch(`/demo/restore-cancelled/${id}`);
     return response.data;
 });
 
@@ -95,6 +135,21 @@ export const restoreEnroll = createAsyncThunk('enrolls/restoreEnroll', async (id
     return response.data;
 });
 
+export const fetchDeletedEnrolls = createAsyncThunk('enrolls/fetchDeletedEnrolls', async () => {
+    const response = await api.get('/enroll/deleted/all');
+    return response.data;
+});
+
+export const restoreDeletedEnroll = createAsyncThunk('enrolls/restoreDeletedEnroll', async (id) => {
+    const response = await api.put(`/enroll/restore/deleted/${id}`);
+    return response.data;
+});
+
+export const permanentDeleteEnroll = createAsyncThunk('enrolls/permanentDeleteEnroll', async (id) => {
+    await api.delete(`/enroll/force/${id}`);
+    return id;
+});
+
 // Fees Thunks
 export const fetchFees = createAsyncThunk('fees/fetchFees', async () => {
     const response = await api.get('/enroll');
@@ -131,3 +186,38 @@ export const deleteFee = createAsyncThunk('fees/deleteFee', async ({ id, payment
     return response.data; // Return the full updated enrollment
 });
 
+// Work Thunks
+export const fetchWorks = createAsyncThunk('works/fetchWorks', async () => {
+    const response = await api.get('/work');
+    return response.data;
+});
+
+export const addWork = createAsyncThunk('works/addWork', async (workData) => {
+    const response = await api.post('/work', workData);
+    return response.data;
+});
+
+export const updateWork = createAsyncThunk('works/updateWork', async ({ id, workData }) => {
+    const response = await api.put(`/work/${id}`, workData);
+    return response.data;
+});
+
+export const deleteWork = createAsyncThunk('works/deleteWork', async (id) => {
+    await api.delete(`/work/${id}`); // Soft delete
+    return id;
+});
+
+export const fetchDeletedWorks = createAsyncThunk('works/fetchDeletedWorks', async () => {
+    const response = await api.get('/work/deleted/all');
+    return response.data;
+});
+
+export const restoreWork = createAsyncThunk('works/restoreWork', async (id) => {
+    const response = await api.put(`/work/restore/${id}`);
+    return response.data;
+});
+
+export const permanentDeleteWork = createAsyncThunk('works/permanentDeleteWork', async (id) => {
+    await api.delete(`/work/force/${id}`);
+    return id;
+});

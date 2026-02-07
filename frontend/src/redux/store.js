@@ -4,6 +4,7 @@ import enquiryReducer from './slices/enquirySlice';
 import demoReducer from './slices/demoSlice';
 import enrollReducer from './slices/enrollSlice';
 import feesReducer from './slices/feesSlice';
+import workReducer from './slices/workSlice';
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     demos: demoReducer,
     enrolls: enrollReducer,
     fees: feesReducer,
+    works: workReducer,
   },
 });

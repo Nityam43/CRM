@@ -5,7 +5,7 @@ const Enquiry = require("../models/enquiry.model.js");
 // --- Get all enrollments ---
 const getEnrollments = async (req, res) => {
   try {
-    const enrollments = await Enroll.find();
+    const enrollments = await Enroll.find({ isDeleted: { $ne: true } });
     res.status(200).json(enrollments);
   } catch (error) {
     res.status(500).json({
@@ -19,7 +19,7 @@ const getEnrollments = async (req, res) => {
 const getEnrollmentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const enrollment = await Enroll.findById(id);
+    const enrollment = await Enroll.findOne({ _id: id, isDeleted: { $ne: true } });
     if (!enrollment) {
       return res.status(404).json({ message: "Enrollment not found" });
     }
@@ -35,7 +35,7 @@ const getEnrollmentById = async (req, res) => {
 const getEnrollmentByEnrollNo = async (req, res) => {
   try {
     const { enrollNo } = req.params;
-    const enrollment = await Enroll.findOne({ enrollNo: enrollNo }).populate('demoId').populate('enquiryId');
+    const enrollment = await Enroll.findOne({ enrollNo: enrollNo, isDeleted: false }).populate('demoId').populate('enquiryId');
     if (!enrollment) {
       return res.status(404).json({ message: "Enrollment not found" });
     }
@@ -207,11 +207,10 @@ const updateEnrollment = async (req, res) => {
   }
 };
 
-// --- Delete an enrollment by ID ---
 const deleteEnrollment = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedEnrollment = await Enroll.findByIdAndDelete(id);
+    const deletedEnrollment = await Enroll.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     if (!deletedEnrollment) {
       return res.status(404).json({ message: "Enrollment not found" });
     }
@@ -219,6 +218,54 @@ const deleteEnrollment = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error deleting enrollment",
+      error: error.message,
+    });
+  }
+};
+
+const getDeletedEnrollments = async (req, res) => {
+  try {
+    const enrollments = await Enroll.find({ isDeleted: true }).sort({ updatedAt: -1 });
+    res.status(200).json(enrollments);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching deleted enrollments",
+      error: error.message,
+    });
+  }
+};
+
+const restoreDeletedEnrollment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restoredEnrollment = await Enroll.findByIdAndUpdate(
+      id,
+      { isDeleted: false },
+      { new: true }
+    );
+    if (!restoredEnrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+    res.status(200).json({ message: "Enrollment restored successfully", data: restoredEnrollment });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error restoring enrollment",
+      error: error.message,
+    });
+  }
+};
+
+const permanentDeleteEnrollment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedEnrollment = await Enroll.findByIdAndDelete(id);
+    if (!deletedEnrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+    res.status(200).json({ message: "Enrollment permanently deleted" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error deleting enrollment permanently",
       error: error.message,
     });
   }
@@ -358,4 +405,7 @@ module.exports = {
   restoreEnrollment,
   addFeePayment,
   deleteFeePayment,
+  getDeletedEnrollments,
+  restoreDeletedEnrollment,
+  permanentDeleteEnrollment,
 };

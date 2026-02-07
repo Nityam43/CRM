@@ -9,6 +9,8 @@ import {
   ListBulletIcon,
   XCircleIcon,
   CurrencyDollarIcon,
+  TrashIcon,
+  BriefcaseIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
@@ -31,6 +33,7 @@ const Sidebar = ({
   const [demoDropdownOpen, setDemoDropdownOpen] = useState(false);
   const [enrollDropdownOpen, setEnrollDropdownOpen] = useState(false);
   const [feesDropdownOpen, setFeesDropdownOpen] = useState(false);
+  const [workDropdownOpen, setWorkDropdownOpen] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -88,6 +91,11 @@ const Sidebar = ({
   const feesOptions = [
     { label: "Fees List", path: "/fees/list" },
     { label: "Fees Pay", path: "/fees/pay" },
+  ];
+
+  const workOptions = [
+    { label: "Add Work", path: "/work/add", icon: DocumentPlusIcon },
+    { label: "Work List", path: "/work/list", icon: ListBulletIcon },
   ];
 
   return (
@@ -491,6 +499,130 @@ const Sidebar = ({
           )}
         </div>
 
+        {/* Work Dropdown */}
+        <div>
+          <button
+            onClick={() => setWorkDropdownOpen(!workDropdownOpen)}
+            className={
+              "w-full flex items-center px-3 py-3 rounded transition relative group " +
+              (isDark ? "hover:bg-[#232941]" : "hover:bg-gray-100")
+            }
+            title="Work"
+          >
+            <BriefcaseIcon
+              className={
+                "h-6 w-6 shrink-0 " +
+                (isDark ? "text-blue-400" : "text-blue-600")
+              }
+            />
+            <span
+              className={
+                "ml-4 whitespace-nowrap transition-opacity duration-300 " +
+                (isExpanded ? "opacity-100" : "opacity-0")
+              }
+            >
+              Work
+            </span>
+            {isExpanded && (
+              <ChevronDownIcon
+                className={
+                  "h-4 w-4 shrink-0 ml-auto " +
+                  (isDark ? "text-blue-400" : "text-blue-600") +
+                  (workDropdownOpen ? " rotate-180" : "")
+                }
+              />
+            )}
+            {!isExpanded && (
+              <div
+                className={
+                  "absolute left-20 px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap " +
+                  (isDark
+                    ? "bg-[#232941] text-white"
+                    : "bg-gray-900 text-white")
+                }
+              >
+                Work
+              </div>
+            )}
+          </button>
+
+          {/* Work dropdown menu */}
+          {workDropdownOpen && isExpanded && (
+            <div
+              className={
+                "mt-2 ml-6 space-y-2 rounded p-2 " +
+                (isDark ? "bg-[#0d0f15]" : "bg-gray-100")
+              }
+            >
+              {workOptions.map((option) => {
+                const IconComponent = option.icon;
+                return (
+                  <button
+                    key={option.path}
+                    onClick={() => {
+                      navigate(option.path);
+                      setWorkDropdownOpen(false);
+                      setIsSidebarOpen(false);
+                    }}
+                    className={
+                      "w-full flex items-center px-3 py-2 rounded transition text-sm " +
+                      (isActive(option.path)
+                        ? "bg-blue-600 text-white"
+                        : isDark
+                        ? "hover:bg-[#232941] text-gray-300"
+                        : "hover:bg-white text-gray-800")
+                    }
+                  >
+                    <IconComponent className="h-4 w-4 mr-2 shrink-0" />
+                    <span className="whitespace-nowrap">{option.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        {/* DND / Trash List */}
+        <div>
+          <button
+            onClick={() => navigate("/trash")}
+            className={
+              "w-full flex items-center justify-center lg:justify-start px-3 py-3 rounded transition relative group " +
+              (isActive("/trash")
+                ? isDark
+                  ? "bg-[#232941]"
+                  : "bg-blue-100"
+                : isDark
+                ? "hover:bg-[#232941]"
+                : "hover:bg-gray-100")
+            }
+            title="Trash / DND List"
+          >
+            <TrashIcon
+              className={
+                "h-6 w-6 shrink-0 " + (isDark ? "text-blue-400" : "text-blue-600")
+              }
+            />
+            <span
+              className={
+                "ml-4 whitespace-nowrap transition-opacity duration-300 " +
+                (isExpanded ? "opacity-100" : "opacity-0")
+              }
+            >
+              DND List
+            </span>
+            {!isExpanded && (
+              <div
+                className={
+                  "absolute left-20 px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap " +
+                  (isDark ? "bg-[#232941] text-white" : "bg-gray-900 text-white")
+                }
+              >
+                DND List
+              </div>
+            )}
+          </button>
+        </div>
+
         {/* Enquiry reminder */}
         <div className="mt-6 px-2 pb-4">
           {isExpanded ? (
@@ -570,6 +702,8 @@ const Sidebar = ({
           )}
         </div>
       </nav>
+
+
 
       {/* Logout */}
       <button

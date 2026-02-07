@@ -8,10 +8,15 @@ import {
   cancelDemo,
   updateEnquiry,
   updateEnroll,
+  fetchDeletedDemos,
+  restoreDemo,
+  permanentDeleteDemo,
+  restoreCancelledDemo,
 } from "../thunks";
 
 const initialState = {
   demos: [],
+  deletedDemos: [],
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
@@ -99,6 +104,24 @@ const demoSlice = createSlice({
           }
           return demo;
         });
+      })
+      .addCase(fetchDeletedDemos.fulfilled, (state, action) => {
+        state.deletedDemos = action.payload;
+      })
+      .addCase(restoreDemo.fulfilled, (state, action) => {
+        state.deletedDemos = state.deletedDemos.filter(d => d._id !== action.payload.data._id);
+        state.demos.push(action.payload.data);
+      })
+      .addCase(permanentDeleteDemo.fulfilled, (state, action) => {
+        state.deletedDemos = state.deletedDemos.filter(d => d._id !== action.payload);
+      })
+      .addCase(restoreCancelledDemo.fulfilled, (state, action) => {
+        const index = state.demos.findIndex(d => d._id === action.payload.data._id);
+        if (index !== -1) {
+          state.demos[index] = action.payload.data;
+        } else {
+          state.demos.push(action.payload.data);
+        }
       });
   },
 });

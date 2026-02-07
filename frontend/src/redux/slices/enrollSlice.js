@@ -8,10 +8,14 @@ import {
   restoreEnroll,
   updateDemo,
   updateEnquiry,
+  fetchDeletedEnrolls,
+  restoreDeletedEnroll,
+  permanentDeleteEnroll,
 } from "../thunks";
 
 const initialState = {
   enrolls: [],
+  deletedEnrolls: [],
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
@@ -94,6 +98,16 @@ const enrollSlice = createSlice({
           }
           return enroll;
         });
+      })
+      .addCase(fetchDeletedEnrolls.fulfilled, (state, action) => {
+        state.deletedEnrolls = action.payload;
+      })
+      .addCase(restoreDeletedEnroll.fulfilled, (state, action) => {
+        state.deletedEnrolls = state.deletedEnrolls.filter(e => e._id !== action.payload.data._id);
+        state.enrolls.push(action.payload.data);
+      })
+      .addCase(permanentDeleteEnroll.fulfilled, (state, action) => {
+        state.deletedEnrolls = state.deletedEnrolls.filter(e => e._id !== action.payload);
       });
   },
 });

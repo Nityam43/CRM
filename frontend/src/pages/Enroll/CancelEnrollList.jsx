@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
@@ -330,8 +330,9 @@ const CancelEnrollList = () => {
                       <div className="flex justify-center gap-2">
                         <button
                           onClick={() => handleRestoreClick(item)}
-                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
+                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white flex items-center gap-1"
                         >
+                          <ArrowPathIcon className="h-4 w-4" />
                           Restore
                         </button>
                         <button

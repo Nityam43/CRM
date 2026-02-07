@@ -18,7 +18,7 @@ const createEnquiry = async (req, res) => {
 
 const getEnquiries = async (req, res) => {
   try {
-    const enquiries = await Enquiry.find();
+    const enquiries = await Enquiry.find({ isDeleted: { $ne: true } });
     res.status(200).json(enquiries);
   } catch (error) {
     res.status(500).json({
@@ -31,7 +31,7 @@ const getEnquiries = async (req, res) => {
 const getEnquiryById = async (req, res) => {
   try {
     const { id } = req.params;
-    const enquiry = await Enquiry.findById(id);
+    const enquiry = await Enquiry.findOne({ _id: id, isDeleted: { $ne: true } });
     if (!enquiry) {
       return res.status(404).json({ message: "Enquiry not found" });
     }
@@ -126,7 +126,7 @@ const cancelEnquiry = async (req, res) => {
 const getEnquiriesByStatus = async (req, res) => {
   try {
     const { status } = req.params;
-    const enquiries = await Enquiry.find({ status });
+    const enquiries = await Enquiry.find({ status, isDeleted: { $ne: true } });
     res.status(200).json(enquiries);
   } catch (error) {
     res.status(500).json({
@@ -139,7 +139,7 @@ const getEnquiriesByStatus = async (req, res) => {
 const deleteEnquiry = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedEnquiry = await Enquiry.findByIdAndDelete(id);
+    const deletedEnquiry = await Enquiry.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     if (!deletedEnquiry) {
       return res.status(404).json({ message: "Enquiry not found" });
     }
@@ -147,6 +147,73 @@ const deleteEnquiry = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error deleting enquiry",
+      error: error.message,
+    });
+  }
+};
+const getDeletedEnquiries = async (req, res) => {
+  try {
+    const enquiries = await Enquiry.find({ isDeleted: true }).sort({ updatedAt: -1 });
+    res.status(200).json(enquiries);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching deleted enquiries",
+      error: error.message,
+    });
+  }
+};
+
+const restoreEnquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restoredEnquiry = await Enquiry.findByIdAndUpdate(
+      id,
+      { isDeleted: false },
+      { new: true }
+    );
+    if (!restoredEnquiry) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+    res.status(200).json({ message: "Enquiry restored successfully", data: restoredEnquiry });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error restoring enquiry",
+      error: error.message,
+    });
+  }
+};
+
+const permanentDeleteEnquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedEnquiry = await Enquiry.findByIdAndDelete(id);
+    if (!deletedEnquiry) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+    res.status(200).json({ message: "Enquiry permanently deleted" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error deleting enquiry permanently",
+      error: error.message,
+    });
+  }
+};
+
+const restoreCancelledEnquiry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restoredEnquiry = await Enquiry.findByIdAndUpdate(
+      id,
+      { status: "Enquiry" }, // Reset status to default 'Enquiry'
+      { new: true }
+    );
+    if (!restoredEnquiry) {
+      return res.status(404).json({ message: "Enquiry not found" });
+    }
+    res.status(200).json({ message: "Enquiry restored from cancelled", data: restoredEnquiry });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error restoring cancelled enquiry",
       error: error.message,
     });
   }
@@ -160,4 +227,8 @@ module.exports = {
   cancelEnquiry,
   getEnquiriesByStatus,
   deleteEnquiry,
+  getDeletedEnquiries,
+  restoreEnquiry,
+  permanentDeleteEnquiry,
+  restoreCancelledEnquiry,
 };

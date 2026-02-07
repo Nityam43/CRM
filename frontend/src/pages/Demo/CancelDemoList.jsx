@@ -1,13 +1,15 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import { useMediaQuery } from "react-responsive";
 import CancelDemoCard from "../../components/CancelDemoCard";
 import api from "../../api/axios";
+import { useDispatch } from "react-redux";
+import { restoreCancelledDemo } from "../../redux/thunks";
 
 const CancelDemoList = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -35,7 +37,7 @@ const CancelDemoList = () => {
   const handleRestoreClick = async (demo) => {
     if (!window.confirm("Are you sure you want to restore this demo?")) return;
     try {
-      await api.put(`/demo/${demo._id}`, { ...demo, status: "Demo" });
+      await dispatch(restoreCancelledDemo(demo._id)).unwrap();
       setDemos((prevDemos) => prevDemos.filter((d) => d._id !== demo._id));
     } catch (err) {
       setError(err.message);
@@ -311,8 +313,9 @@ const CancelDemoList = () => {
                       <div className="flex justify-center gap-2">
                         <button
                           onClick={() => handleRestoreClick(item)}
-                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white"
+                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white flex items-center gap-1"
                         >
+                          <ArrowPathIcon className="h-4 w-4" />
                           Restore
                         </button>
                         <button

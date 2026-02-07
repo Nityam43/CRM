@@ -1,13 +1,16 @@
-import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useTheme } from "../../ThemeContext";
 import api from "../../api/axios";
 import { useMediaQuery } from "react-responsive";
 import CancelCard from "../../components/CancelCard";
+import { restoreCancelledEnquiry } from "../../redux/thunks";
 
 const CancelList = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
@@ -46,6 +49,24 @@ const CancelList = () => {
         err.response?.data?.message ||
           err.message ||
           "Failed to delete enquiry"
+      );
+    }
+  };
+
+  const handleRestoreClick = async (enquiryId) => {
+    if (!window.confirm("Are you sure you want to restore this enquiry?"))
+      return;
+
+    try {
+      await dispatch(restoreCancelledEnquiry(enquiryId)).unwrap();
+      setCancelledEnquiries((prev) =>
+        prev.filter((e) => e._id !== enquiryId)
+      );
+      // Optional: Add success toast here
+    } catch (err) {
+      console.error("Failed to restore enquiry:", err);
+      setError(
+        err.message || "Failed to restore enquiry"
       );
     }
   };
@@ -312,6 +333,13 @@ const CancelList = () => {
                         >
                           <TrashIcon className="h-4 w-4" />
                           Delete
+                        </button>
+                        <button
+                          onClick={() => handleRestoreClick(e._id)}
+                          className="text-green-400 border border-green-500 px-3 py-1 rounded text-xs hover:bg-green-500 hover:text-white flex items-center gap-1 ml-2"
+                        >
+                          <ArrowPathIcon className="h-4 w-4" />
+                          Restore
                         </button>
                       </div>
                     </td>

@@ -37,7 +37,7 @@ const createDemo = async (req, res) => {
 // Get all demos
 const getDemos = async (req, res) => {
   try {
-    const demos = await Demo.find();
+    const demos = await Demo.find({ isDeleted: { $ne: true } });
     res.status(200).json(demos);
   } catch (error) {
     res.status(500).json({
@@ -51,7 +51,7 @@ const getDemos = async (req, res) => {
 const getDemoById = async (req, res) => {
   try {
     const { id } = req.params;
-    const demo = await Demo.findById(id);
+    const demo = await Demo.findOne({ _id: id, isDeleted: { $ne: true } });
     if (!demo) {
       return res.status(404).json({ message: "Demo not found" });
     }
@@ -133,7 +133,7 @@ const updateDemo = async (req, res) => {
 const deleteDemo = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedDemo = await Demo.findByIdAndDelete(id);
+    const deletedDemo = await Demo.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     if (!deletedDemo) {
       return res.status(404).json({ message: "Demo not found" });
     }
@@ -141,6 +141,54 @@ const deleteDemo = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error deleting demo",
+      error: error.message,
+    });
+  }
+};
+
+const getDeletedDemos = async (req, res) => {
+  try {
+    const demos = await Demo.find({ isDeleted: true }).sort({ updatedAt: -1 });
+    res.status(200).json(demos);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching deleted demos",
+      error: error.message,
+    });
+  }
+};
+
+const restoreDemo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restoredDemo = await Demo.findByIdAndUpdate(
+      id,
+      { isDeleted: false },
+      { new: true }
+    );
+    if (!restoredDemo) {
+      return res.status(404).json({ message: "Demo not found" });
+    }
+    res.status(200).json({ message: "Demo restored successfully", data: restoredDemo });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error restoring demo",
+      error: error.message,
+    });
+  }
+};
+
+const permanentDeleteDemo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedDemo = await Demo.findByIdAndDelete(id);
+    if (!deletedDemo) {
+      return res.status(404).json({ message: "Demo not found" });
+    }
+    res.status(200).json({ message: "Demo permanently deleted" });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error deleting demo permanently",
       error: error.message,
     });
   }
@@ -183,6 +231,37 @@ const cancelDemo = async (req, res) => {
   }
 };
 
+const restoreCancelledDemo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const restoredDemo = await Demo.findByIdAndUpdate(
+      id,
+      { status: "Demo" }, // Reset status to default 'Demo'
+      { new: true }
+    );
+    if (!restoredDemo) {
+      return res.status(404).json({ message: "Demo not found" });
+    }
+
+    // Also update associated enquiry status if it exists
+    if (restoredDemo.email) {
+      const Enquiry = require("../models/enquiry.model.js");
+      await Enquiry.findOneAndUpdate(
+        { email: restoredDemo.email },
+        { status: "Moved to Demo" },
+        { new: true }
+      );
+    }
+
+    res.status(200).json({ message: "Demo restored from cancelled", data: restoredDemo });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error restoring cancelled demo",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createDemo,
   getDemos,
@@ -190,4 +269,8 @@ module.exports = {
   updateDemo,
   deleteDemo,
   cancelDemo,
+  getDeletedDemos,
+  restoreDemo,
+  permanentDeleteDemo,
+  restoreCancelledDemo,
 };

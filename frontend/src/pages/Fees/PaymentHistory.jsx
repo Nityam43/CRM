@@ -59,11 +59,11 @@ const PaymentHistory = () => {
       >
         Payment History for {enrollment.studentName} ({enrollNo})
       </h1>
-      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+      <div className={`shadow-md rounded-lg overflow-hidden ${isDark ? "bg-gray-800" : "bg-white"}`}>
         <table className="min-w-full leading-normal">
           <thead
-            className={`bg-gray-50 dark:bg-gray-700 ${
-              isDark ? "text-gray-300" : "text-gray-600"
+            className={`${
+              isDark ? "bg-gray-700 text-gray-300" : "bg-gray-50 text-gray-600"
             } text-left text-sm font-semibold uppercase tracking-wider`}
           >
             <tr>
@@ -79,7 +79,7 @@ const PaymentHistory = () => {
               payments.map((payment, index) => (
                 <tr
                   key={payment._id}
-                  className="border-b border-gray-200 dark:border-gray-700"
+                  className={`border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}
                 >
                   <td className="px-5 py-5">
                     {String(index + 1).padStart(2, "0")}

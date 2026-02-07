@@ -16,6 +16,7 @@ import DemoList from "../pages/Demo/DemoList";
 import CancelDemoList from "../pages/Demo/CancelDemoList";
 import EditDemo from "../pages/Demo/EditDemo";
 import EnrollList from "../pages/Enroll/EnrollList";
+import DNDList from "../pages/DNDList";
 import CancelEnrollList from "../pages/Enroll/CancelEnrollList";
 import EditEnroll from "../pages/Enroll/EditEnroll";
 import FeesList from "../pages/Fees/FeesList";
@@ -25,6 +26,8 @@ import PaymentHistory from "../pages/Fees/PaymentHistory";
 import EnquiryReminders from "../pages/Enquiry/EnquiryReminders";
 import DemoReminder from "../pages/Demo/DemoReminder";
 import AddEnrollment from "../pages/Enroll/AddEnrollment";
+import AddWork from "../pages/Work/AddWork";
+import WorkList from "../pages/Work/WorkList";
 
 const Mainroutes = () => {
   const location = useLocation();
@@ -226,6 +229,26 @@ const Mainroutes = () => {
         }
       />
       <Route
+        path="/work/add"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddWork />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/work/list"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <WorkList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/enquiry/reminders"
         element={
           <ProtectedRoute>
@@ -241,6 +264,16 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <DemoReminder />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/trash"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <DNDList />
             </Layout>
           </ProtectedRoute>
         }

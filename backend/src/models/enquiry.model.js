@@ -71,6 +71,10 @@ const enquirySchema = new mongoose.Schema({
         type: String,
         default: 'Enquiry',
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 const Enquiry = mongoose.model('Enquiry', enquirySchema);

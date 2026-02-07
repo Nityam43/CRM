@@ -8,10 +8,15 @@ import {
   cancelEnquiry,
   updateDemo,
   updateEnroll,
+  fetchDeletedEnquiries,
+  restoreEnquiry,
+  permanentDeleteEnquiry,
+  restoreCancelledEnquiry,
 } from "../thunks";
 
 const initialState = {
   enquiries: [],
+  deletedEnquiries: [],
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
   error: null,
 };
@@ -98,6 +103,28 @@ const enquirySlice = createSlice({
           }
           return enquiry;
         });
+      })
+      .addCase(fetchDeletedEnquiries.fulfilled, (state, action) => {
+        state.deletedEnquiries = action.payload;
+      })
+      .addCase(restoreEnquiry.fulfilled, (state, action) => {
+        // Remove from deleted list
+        state.deletedEnquiries = state.deletedEnquiries.filter(e => e._id !== action.payload.data._id);
+        // Add to main list
+        state.enquiries.push(action.payload.data);
+      })
+      .addCase(permanentDeleteEnquiry.fulfilled, (state, action) => {
+        state.deletedEnquiries = state.deletedEnquiries.filter(e => e._id !== action.payload);
+      })
+      .addCase(restoreCancelledEnquiry.fulfilled, (state, action) => {
+        // Find if the enquiry exists in the list (it might still be there but with 'Cancelled' status)
+        const index = state.enquiries.findIndex(e => e._id === action.payload.data._id);
+        if (index !== -1) {
+          state.enquiries[index] = action.payload.data;
+        } else {
+          // If not in the list (e.g. filtered out), add it
+          state.enquiries.push(action.payload.data);
+        }
       });
   },
 });

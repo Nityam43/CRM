@@ -113,6 +113,10 @@ const enrollSchema = new mongoose.Schema({
     enquiryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Enquiry'
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

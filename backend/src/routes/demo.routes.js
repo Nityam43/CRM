@@ -14,8 +14,14 @@ router.route('/:id')
     .put(authMiddleware, demoController.updateDemo)
     .delete(authMiddleware, demoController.deleteDemo);
 
+router.get('/deleted/all', demoController.getDeletedDemos);
+router.put('/restore/:id', authMiddleware, demoController.restoreDemo);
+router.delete('/force/:id', authMiddleware, demoController.permanentDeleteDemo);
+
 // Route to cancel a specific demo by ID
 router.route('/cancel/:id')
     .patch(authMiddleware, demoController.cancelDemo);
+
+router.patch('/restore-cancelled/:id', authMiddleware, demoController.restoreCancelledDemo);
 
 module.exports = router;

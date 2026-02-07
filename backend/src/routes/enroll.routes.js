@@ -10,6 +10,9 @@ const {
     restoreEnrollment,
     addFeePayment,
     deleteFeePayment,
+    getDeletedEnrollments,
+    restoreDeletedEnrollment,
+    permanentDeleteEnrollment,
 } = require('../controllers/enroll.controller.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
@@ -41,6 +44,10 @@ router.put('/:id', updateEnrollment);
 
 // Route to delete an enrollment by ID
 router.delete('/:id', deleteEnrollment);
+
+router.get('/deleted/all', getDeletedEnrollments);
+router.put('/restore/deleted/:id', restoreDeletedEnrollment); // Changed path to avoid conflict with restore cancelled
+router.delete('/force/:id', permanentDeleteEnrollment);
 
 // Route to cancel an enrollment by ID
 router.patch('/cancel/:id', cancelEnrollment);
