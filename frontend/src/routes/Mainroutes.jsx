@@ -27,7 +27,10 @@ import EnquiryReminders from "../pages/Enquiry/EnquiryReminders";
 import DemoReminder from "../pages/Demo/DemoReminder";
 import AddEnrollment from "../pages/Enroll/AddEnrollment";
 import AddWork from "../pages/Work/AddWork";
+
 import WorkList from "../pages/Work/WorkList";
+import FeesReminders from "../pages/Fees/FeesReminders";
+import WorkReminders from "../pages/Work/WorkReminders";
 
 const Mainroutes = () => {
   const location = useLocation();
@@ -264,6 +267,26 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <DemoReminder />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/fees/reminders"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <FeesReminders />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/work/reminders"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <WorkReminders />
             </Layout>
           </ProtectedRoute>
         }

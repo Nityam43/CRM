@@ -21,14 +21,14 @@ const router = express.Router();
 // Protect all routes
 router.use(authMiddleware);
 
+// Route to get a single enrollment by Enroll No
+router.get('/enrollno/:enrollNo', getEnrollmentByEnrollNo);
+
 // Route to get all enrollments
 router.get('/', getEnrollments);
 
 // Route to get a single enrollment by ID
 router.get('/:id', getEnrollmentById);
-
-// Route to get a single enrollment by Enroll No
-router.get('/enrollno/:enrollNo', getEnrollmentByEnrollNo);
 
 // Route to create a new enrollment
 router.post('/', createEnrollment);

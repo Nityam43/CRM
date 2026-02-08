@@ -35,7 +35,7 @@ const getEnrollmentById = async (req, res) => {
 const getEnrollmentByEnrollNo = async (req, res) => {
   try {
     const { enrollNo } = req.params;
-    const enrollment = await Enroll.findOne({ enrollNo: enrollNo, isDeleted: false }).populate('demoId').populate('enquiryId');
+    const enrollment = await Enroll.findOne({ enrollNo: enrollNo, isDeleted: { $ne: true } }).populate('demoId').populate('enquiryId');
     if (!enrollment) {
       return res.status(404).json({ message: "Enrollment not found" });
     }

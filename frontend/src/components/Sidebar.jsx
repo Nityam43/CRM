@@ -18,7 +18,7 @@ import { useTheme } from "../ThemeContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEnquiries, fetchDemos } from "../redux/thunks";
+import { fetchEnquiries, fetchDemos, fetchFees, fetchWorks } from "../redux/thunks";
 
 const Sidebar = ({
   isSidebarOpen,
@@ -40,9 +40,14 @@ const Sidebar = ({
   const { enquiries } = useSelector((state) => state.enquiries);
   const { demos } = useSelector((state) => state.demos);
 
+  const { fees } = useSelector((state) => state.fees);
+  const { works } = useSelector((state) => state.works);
+
   useEffect(() => {
     dispatch(fetchEnquiries());
     dispatch(fetchDemos());
+    dispatch(fetchFees());
+    dispatch(fetchWorks());
   }, [dispatch]);
 
   const reminderCount = useMemo(() => {
@@ -55,6 +60,17 @@ const Sidebar = ({
       (d) => d.reminder && d.status !== "Done" && d.status !== "Cancelled"
     ).length;
   }, [demos]);
+
+  const feesReminderCount = useMemo(() => {
+    return fees.filter((f) => f.reminderDate).length;
+  }, [fees]);
+
+  const workReminderCount = useMemo(() => {
+    return works.filter(
+      (w) =>
+        w.reminderDate && w.status !== "Completed" && w.status !== "Cancelled"
+    ).length;
+  }, [works]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -623,8 +639,17 @@ const Sidebar = ({
           </button>
         </div>
 
+        {/* Reminders Label */}
+        {isExpanded && (
+          <div className="px-3 mt-6 mb-2">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              Reminders
+            </h3>
+          </div>
+        )}
+
         {/* Enquiry reminder */}
-        <div className="mt-6 px-2 pb-4">
+        <div className={isExpanded ? "px-2 pb-2" : "mt-6 px-2 pb-4"}>
           {isExpanded ? (
             <button
               onClick={() => navigate("/enquiry/reminders")}
@@ -664,7 +689,7 @@ const Sidebar = ({
         </div>
 
         {/* Demo reminder */}
-        <div className="px-2 pb-4">
+        <div className="px-2 pb-2">
           {isExpanded ? (
             <button
               onClick={() => navigate("/demo/reminders")}
@@ -696,6 +721,84 @@ const Sidebar = ({
                 <FontAwesomeIcon icon={faBell} />
                 <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
                   {demoReminderCount}
+                </span>
+              </span>
+            </button>
+          )}
+        </div>
+
+        {/* Fees reminder */}
+        <div className="px-2 pb-2">
+          {isExpanded ? (
+            <button
+              onClick={() => navigate("/fees/reminders")}
+              className={
+                "flex w-full items-center justify-start rounded-md px-3 py-2 text-[11px] font-medium transition-colors " +
+                (isActive("/fees/reminders")
+                  ? "bg-blue-600 text-white"
+                  : isDark
+                  ? "bg-[#232941] hover:bg-[#2d3555] text-gray-200"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-800")
+              }
+              title="Fees reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  {feesReminderCount}
+                </span>
+              </span>
+              <span className="ml-2">Fees</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/fees/reminders")}
+              className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-xs"
+              title="Fees reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  {feesReminderCount}
+                </span>
+              </span>
+            </button>
+          )}
+        </div>
+
+        {/* Work reminder */}
+        <div className="px-2 pb-4">
+          {isExpanded ? (
+            <button
+              onClick={() => navigate("/work/reminders")}
+              className={
+                "flex w-full items-center justify-start rounded-md px-3 py-2 text-[11px] font-medium transition-colors " +
+                (isActive("/work/reminders")
+                  ? "bg-blue-600 text-white"
+                  : isDark
+                  ? "bg-[#232941] hover:bg-[#2d3555] text-gray-200"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-800")
+              }
+              title="Work reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  {workReminderCount}
+                </span>
+              </span>
+              <span className="ml-2">Work</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/work/reminders")}
+              className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-xs"
+              title="Work reminders"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center">
+                <FontAwesomeIcon icon={faBell} />
+                <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
+                  {workReminderCount}
                 </span>
               </span>
             </button>
