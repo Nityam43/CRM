@@ -29,6 +29,7 @@ app.use("/listItem", listItemRoutes);
 app.use("/demo", demoRoutes);
 app.use("/enroll", enrollRoutes);
 app.use("/work", require("./routes/work.routes.js"));
+app.use("/expense", require("./routes/expense.routes.js"));
 
 app.get("*name", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));

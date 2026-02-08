@@ -31,6 +31,7 @@ import AddWork from "../pages/Work/AddWork";
 import WorkList from "../pages/Work/WorkList";
 import FeesReminders from "../pages/Fees/FeesReminders";
 import WorkReminders from "../pages/Work/WorkReminders";
+import IncomeExpense from "../pages/IncomeExpense/IncomeExpense";
 
 const Mainroutes = () => {
   const location = useLocation();
@@ -297,6 +298,16 @@ const Mainroutes = () => {
           <ProtectedRoute>
             <Layout>
               <DNDList />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/income-expense"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <IncomeExpense />
             </Layout>
           </ProtectedRoute>
         }

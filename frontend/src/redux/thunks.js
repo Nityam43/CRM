@@ -221,3 +221,24 @@ export const permanentDeleteWork = createAsyncThunk('works/permanentDeleteWork',
     await api.delete(`/work/force/${id}`);
     return id;
 });
+
+// Expense Thunks
+export const fetchExpenses = createAsyncThunk('expenses/fetchExpenses', async () => {
+    const response = await api.get('/expense');
+    return response.data;
+});
+
+export const addExpense = createAsyncThunk('expenses/addExpense', async (expenseData) => {
+    const response = await api.post('/expense', expenseData);
+    return response.data;
+});
+
+export const updateExpense = createAsyncThunk('expenses/updateExpense', async ({ id, expenseData }) => {
+    const response = await api.put(`/expense/${id}`, expenseData);
+    return response.data;
+});
+
+export const deleteExpense = createAsyncThunk('expenses/deleteExpense', async (id) => {
+    await api.delete(`/expense/${id}`);
+    return id;
+});

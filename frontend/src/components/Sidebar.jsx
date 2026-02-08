@@ -11,6 +11,7 @@ import {
   CurrencyDollarIcon,
   TrashIcon,
   BriefcaseIcon,
+  BanknotesIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
@@ -800,6 +801,39 @@ const Sidebar = ({
                 <span className="absolute -top-1 -right-1 inline-flex items-center justify-center min-w-4 h-4 rounded-full bg-teal-500 text-[10px] leading-none text-white">
                   {workReminderCount}
                 </span>
+              </span>
+            </button>
+          )}
+        </div>
+
+        {/* Income & Expense */}
+        <div className="px-2 pb-4">
+          {isExpanded ? (
+            <button
+              onClick={() => navigate("/income-expense")}
+              className={
+                "flex w-full items-center justify-start rounded-md px-3 py-2 text-[11px] font-medium transition-colors " +
+                (isActive("/income-expense")
+                  ? "bg-blue-600 text-white"
+                  : isDark
+                  ? "bg-[#232941] hover:bg-[#2d3555] text-gray-200"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-800")
+              }
+              title="Income & Expense"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white text-xs">
+                <BanknotesIcon className="h-4 w-4" />
+              </span>
+              <span className="ml-2">Income & Expense</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/income-expense")}
+              className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-xs"
+              title="Income & Expense"
+            >
+              <span className="relative inline-flex h-6 w-6 items-center justify-center">
+                <BanknotesIcon className="h-4 w-4" />
               </span>
             </button>
           )}
